@@ -1,31 +1,30 @@
 <template>
   <v-app id="inspire">
-    <LeftWrapper></LeftWrapper>
-    <v-banner
-        single-line
-        sticky
+    <v-navigation-drawer
+        v-model="drawer"
+        app
     >
+<LeftWrapper></LeftWrapper>
+    </v-navigation-drawer>
+
+    <v-app-bar app max-height="30" >
       <Tabs></Tabs>
-    </v-banner>
+    </v-app-bar>
 
 
 
-    <v-toolbar-title>
-
-    </v-toolbar-title>
-<!--    <v-icon v-show="drawer" id="drawerIcon"-->
-<!--            @click="drawer = !drawer"-->
-<!--    >-->
-<!--      mdi-chevron-left-->
-<!--    </v-icon>-->
-<!--    <v-icon v-show="!drawer"-->
-<!--            @click="drawer = !drawer"-->
-<!--    >-->
-<!--      mdi-chevron-right-->
-<!--    </v-icon>-->
     <v-main>
-      <!--  -->
-
+      <v-container>
+        <v-row>
+          <v-col
+              v-for="n in 24"
+              :key="n"
+              cols="4"
+          >
+            <v-card height="200"></v-card>
+          </v-col>
+        </v-row>
+      </v-container>
     </v-main>
   </v-app>
 </template>
