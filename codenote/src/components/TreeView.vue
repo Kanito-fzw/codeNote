@@ -1,15 +1,16 @@
 <template>
   <div>
     <v-treeview
+        :active.sync="active"
         dense
         v-model="tree"
-        :open="initiallyOpen"
-        :items="items"
-        activatable
         item-key="name"
-        isEdit="true"
+        :items="items"
+        :open.sync="open"
+        activatable
+        color="warning"
         open-on-click
-        @click="openFile"
+        transition
     >
       <template v-slot:prepend="{ item, open }">
         <v-icon v-if="!item.file">
@@ -20,7 +21,7 @@
         </v-icon>
       </template>
     </v-treeview>
-
+    <button @click="openFile">2222222222222222</button>
   </div>
 </template>
 
@@ -28,10 +29,21 @@
 export default {
   methods:{
     openFile(){
-      alert("2323123")
+      alert(this.active)
+    }
+  },
+  computed: {
+    selected () {
+      return this.active
+    },
+  },
+  watch: {
+    selected: function () {
+      alert(this.active)
     }
   },
   data: () => ({
+    active: [],
     initiallyOpen: ['public'],
     files: {
       html: 'mdi-language-html5',
