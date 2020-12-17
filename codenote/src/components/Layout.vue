@@ -14,7 +14,15 @@
 
     <v-main>
       <v-container>
-        <test></test>
+        <v-row>
+          <v-col
+              v-for="n in 24"
+              :key="n"
+              cols="4"
+          >
+            <v-card height="200"></v-card>
+          </v-col>
+        </v-row>
       </v-container>
       <v-btn style="position: fixed;bottom:10px;right:10px"
              class="mx-2"
@@ -35,11 +43,11 @@
 <script>
 import LeftWrapper from "@/components/LeftWrapper";
 import Tabs from "@/components/Tabs";
-import test from "@/components/test";
+
 
 export default {
   components: {
-    Tabs, LeftWrapper,test
+    Tabs, LeftWrapper
   },
   data() {
     return {
