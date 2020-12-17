@@ -7,7 +7,7 @@
     <LeftWrapper></LeftWrapper>
     </v-navigation-drawer>
 
-    <v-app-bar app max-height="30" style="background: white">
+    <v-app-bar app style="background: white" min-width="300" height="26">
       <Tabs></Tabs>
     </v-app-bar>
 
