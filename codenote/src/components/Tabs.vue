@@ -1,17 +1,14 @@
 <template>
-  <v-tabs height="30">
-    <v-tab v-text="text"></v-tab>
+<div>
+  <v-tabs>
+
+    <v-tab>Item Two</v-tab>
     <v-tab>Item Three</v-tab>
   </v-tabs>
+</div>
 </template>
 <script>
 export default {
-
-  data(){
-    return{
-      text:'asdsd'
-    }
-  }
 }
 </script>
 
