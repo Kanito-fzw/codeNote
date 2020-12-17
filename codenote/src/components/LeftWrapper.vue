@@ -1,8 +1,5 @@
 <template>
-  <v-navigation-drawer
-      v-model="drawer"
-      app
-  >
+<div>
     <v-sheet
         color="grey lighten-4"
         class="pa-4"
@@ -15,8 +12,7 @@
     </v-tabs>
     <v-divider></v-divider>
     <TreeView></TreeView>
-
-  </v-navigation-drawer>
+</div>
 </template>
 
 <script>

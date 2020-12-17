@@ -4,13 +4,12 @@
         v-model="drawer"
         app
     >
-    <LeftWrapper></LeftWrapper>
+      <LeftWrapper></LeftWrapper>
     </v-navigation-drawer>
 
     <v-app-bar app style="background: white" min-width="300" height="26">
       <Tabs></Tabs>
     </v-app-bar>
-
 
 
     <v-main>
@@ -25,6 +24,18 @@
           </v-col>
         </v-row>
       </v-container>
+      <v-btn style="position: fixed;bottom:10px;right:10px"
+             class="mx-2"
+             fab
+             x-small
+             dark
+             color="grey"
+             @click="drawer = !drawer"
+      >
+        <v-icon dark>
+          mdi-format-list-bulleted-square
+        </v-icon>
+      </v-btn>
     </v-main>
   </v-app>
 </template>
@@ -32,12 +43,13 @@
 <script>
 import LeftWrapper from "@/components/LeftWrapper";
 import Tabs from "@/components/Tabs";
+
 export default {
-  components:{
-    Tabs,LeftWrapper
+  components: {
+    Tabs, LeftWrapper
   },
-  data(){
-    return{
+  data() {
+    return {
       drawer: null
     }
   }

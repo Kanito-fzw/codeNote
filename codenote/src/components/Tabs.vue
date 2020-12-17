@@ -1,16 +1,17 @@
 <template>
 
-  <el-col :span = "24">
-  <el-tabs v-model="editableTabsValue" type="card" editable   stretch="true" @edit="handleTabsEdit" >
-    <el-tab-pane
-        :key="item.name"
-        v-for="(item, index) in editableTabs"
-        :label="item.title"
-        :name="item.name"
-    >
-      {{item.content}}
-    </el-tab-pane>
-  </el-tabs>
+  <el-col :span="24">
+    <el-tabs v-model="editableTabsValue" type="card" editable stretch="true" @edit="handleTabsEdit">
+      <el-tab-pane
+          :key="item.name"
+          v-for="(item, index) in editableTabs"
+          :label="item.title"
+          :name="item.name"
+      >
+        {{ item.content }}
+      </el-tab-pane>
+    </el-tabs>
+
   </el-col>
 </template>
 <script>

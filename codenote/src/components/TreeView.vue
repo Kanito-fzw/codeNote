@@ -1,26 +1,36 @@
 <template>
-  <v-treeview
-      dense
-      v-model="tree"
-      :open="initiallyOpen"
-      :items="items"
-      activatable
-      item-key="name"
-      open-on-click
-  >
-    <template v-slot:prepend="{ item, open }">
-      <v-icon v-if="!item.file">
-        {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
-      </v-icon>
-      <v-icon v-else>
-        {{ files[item.file] }}
-      </v-icon>
-    </template>
-  </v-treeview>
+  <div>
+    <v-treeview
+        dense
+        v-model="tree"
+        :open="initiallyOpen"
+        :items="items"
+        activatable
+        item-key="name"
+        isEdit="true"
+        open-on-click
+        @click="openFile"
+    >
+      <template v-slot:prepend="{ item, open }">
+        <v-icon v-if="!item.file">
+          {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
+        </v-icon>
+        <v-icon v-else>
+          {{ files[item.file] }}
+        </v-icon>
+      </template>
+    </v-treeview>
+
+  </div>
 </template>
 
 <script>
 export default {
+  methods:{
+    openFile(){
+      alert("2323123")
+    }
+  },
   data: () => ({
     initiallyOpen: ['public'],
     files: {
