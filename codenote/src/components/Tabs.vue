@@ -1,5 +1,5 @@
 <template>
-  <v-tabs>
+  <v-tabs height="30">
 
     <v-tab>Item Two</v-tab>
     <v-tab>Item Three</v-tab>
