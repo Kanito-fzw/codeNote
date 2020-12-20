@@ -12,6 +12,7 @@
   },
   "main": "background.js",
   "dependencies": {
+    "@material-ui/core": "^4.11.2",
     "core-js": "^3.6.5",
     "element-ui": "^2.4.5",
     "view-design": "^4.0.0",

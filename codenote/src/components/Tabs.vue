@@ -8,7 +8,6 @@
           :label="item.title"
           :name="item.name"
       >
-        {{ item.content }}
       </el-tab-pane>
     </el-tabs>
 
@@ -22,11 +21,9 @@ export default {
       editableTabs: [{
         title: 'Tab 1',
         name: '1',
-        content: ''
       }, {
         title: 'Tab 2',
         name: '2',
-        content: ''
       }],
       tabIndex: 2
     }
@@ -38,7 +35,6 @@ export default {
         this.editableTabs.push({
           title: 'New Tab',
           name: newTabName,
-          content: ''
         });
         this.editableTabsValue = newTabName;
       }
