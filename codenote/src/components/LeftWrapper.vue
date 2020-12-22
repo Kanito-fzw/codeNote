@@ -1,26 +1,29 @@
 <template>
-<div>
+  <div>
     <v-sheet
         color="grey lighten-4"
         class="pa-4"
     >
+      <!--      头像-->
       <Login></Login>
     </v-sheet>
-    <v-tabs  grow height="34">
+    <v-tabs grow height="34">
       <v-tab>文件</v-tab>
       <v-tab>目录</v-tab>
     </v-tabs>
     <v-divider></v-divider>
+    <!--  树状结构-->
     <TreeView></TreeView>
-</div>
+  </div>
 </template>
 
 <script>
 import TreeView from "@/components/TreeView";
 import Login from "@/components/Login";
+
 export default {
-  components:{
-    TreeView,Login
+  components: {
+    TreeView, Login
   },
 }
 </script>

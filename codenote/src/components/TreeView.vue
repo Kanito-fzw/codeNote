@@ -5,24 +5,27 @@
         node-key="id"
         draggable
         @node-click="noteClick"
+        highlight-current
+        @node-contextmenu="nodeContextmenu"
         :allow-drop="allowDrop"
         default-expand-all>
       <span class="custom-tree-node" slot-scope="{ node, data }">
         <span>
+<!--          根据是否有icon属性判断是文件还是文件夹-->
           <v-icon v-if="!data.icon">
         {{ node.expanded ? 'mdi-folder-open' : 'mdi-folder' }}
       </v-icon>
       <v-icon v-else>
         {{ data.icon }}
       </v-icon>  {{ node.label }}</span>
-        <span >
+        <span>
           <el-button
               v-if="!data.icon"
               type="text"
               size="mini"
               @click.stop="() => appendFile(data)">
             <v-icon>
-              {{'mdi-file-plus-outline'}}
+              {{ 'mdi-file-plus-outline' }}
             </v-icon>
           </el-button>
           <el-button
@@ -31,7 +34,7 @@
               size="mini"
               @click.stop="() => append(data)">
             <v-icon>
-              {{'mdi-folder-plus'}}
+              {{ 'mdi-folder-plus' }}
             </v-icon>
           </el-button>
           <el-button
@@ -39,7 +42,7 @@
               size="mini"
               @click="() => remove(node, data)">
             <v-icon>
-              {{'mdi-delete'}}
+              {{ 'mdi-delete' }}
             </v-icon>
           </el-button>
         </span>
@@ -54,6 +57,7 @@ let id = 1000;
 export default {
   data() {
     return {
+      treeClickCount: 0,
       data: [
         {
           id: 1,
@@ -101,17 +105,39 @@ export default {
   },
 
   methods: {
-    noteClick(data, node, obj){
-      console.log(data)
-      if (data.icon){
-
-      }
+    nodeContextmenu(event,data,node,obj){
 
     },
+    //点击事件
+    noteClick(data, node, obj) {
+      //记录点击次数
+      this.treeClickCount++;
+      //单次点击次数超过2次不作处理,直接返回,也可以拓展成多击事件
+      if (this.treeClickCount >= 2) {
+        return;
+      }
+      //计时器,计算300毫秒为单位,可自行修改
+      this.timer = setTimeout(() => {
+        if (this.treeClickCount == 1) {
+          //把次数归零
+          this.treeClickCount = 0;
+          //单击事件处理
+          console.log('单击事件,可在此处理对应逻辑')
+
+        } else if (this.treeClickCount > 1) {
+          //把次数归零
+          this.treeClickCount = 0;
+          //双击事件
+          console.log('双击事件,可在此处理对应逻辑')
+        }
+      }, 300);
+
+    },
+    //限制被拖入的节点不能是文件
     allowDrop(draggingNode, dropNode, type) {
-      if (dropNode.data.icon&&type=='inner'){
+      if (dropNode.data.icon && type == 'inner') {
         return false
-      }else {
+      } else {
         return true
       }
     },
@@ -120,9 +146,9 @@ export default {
       if (!data.children && !data.icon) {
         this.$set(data, 'children', []);
       }
-      if (data.icon){
+      if (data.icon) {
 
-      }else {
+      } else {
 
         data.children.push(newChild);
       }
@@ -132,9 +158,9 @@ export default {
       if (!data.children && !data.icon) {
         this.$set(data, 'children', []);
       }
-      if (data.icon){
+      if (data.icon) {
 
-      }else {
+      } else {
 
         data.children.push(newChild);
       }
