@@ -7,10 +7,20 @@
         @node-click="noteClick"
         highlight-current
         @node-contextmenu="nodeContextmenu"
-        :allow-drop="allowDrop"
-        default-expand-all>
-      <span class="custom-tree-node" slot-scope="{ node, data }">
-        <span>
+        :allow-drop="allowDrop">
+      <div class="custom-tree-node" slot-scope="{ node, data }">
+<!--        编辑状态-->
+        <template v-if="node.isEdit">
+          <el-input v-model="data.label"
+                    autofocus
+                    size="mini"
+                    :ref="'slotTreeInput'+data[NODE_KEY]"
+                    @blur.stop="handleInput(node, data)"
+                    @keyup.enter.native="handleInput(node, data)"></el-input>
+        </template>
+        <!-- 非编辑状态 -->
+        <template v-else>
+                  <span>
 <!--          根据是否有icon属性判断是文件还是文件夹-->
           <v-icon v-if="!data.icon">
         {{ node.expanded ? 'mdi-folder-open' : 'mdi-folder' }}
@@ -18,7 +28,7 @@
       <v-icon v-else>
         {{ data.icon }}
       </v-icon>  {{ node.label }}</span>
-        <span>
+          <span>
           <el-button
               v-if="!data.icon"
               type="text"
@@ -46,7 +56,9 @@
             </v-icon>
           </el-button>
         </span>
-      </span>
+        </template>
+
+      </div>
     </el-tree>
   </div>
 </template>
@@ -105,6 +117,24 @@ export default {
   },
 
   methods: {
+    handleEdit(_node, _data){
+      // 设置编辑状态
+      if(!_node.isEdit){
+        this.$set(_node, 'isEdit', true)
+      }
+      // 输入框聚焦
+      this.$nextTick(() => {
+        if(this.$refs['slotTreeInput'+_data[this.NODE_KEY]]){
+          this.$refs['slotTreeInput'+_data[this.NODE_KEY]].$refs.input.focus()
+        }
+      })
+    },
+    handleInput(_node, _data){
+      // 退出编辑状态
+      if(_node.isEdit){
+        this.$set(_node, 'isEdit', false)
+      }
+    },
     nodeContextmenu(event,data,node,obj){
 
     },
@@ -129,6 +159,7 @@ export default {
           this.treeClickCount = 0;
           //双击事件
           console.log('双击事件,可在此处理对应逻辑')
+          this.handleEdit(node, data)
         }
       }, 300);
 
