@@ -9,7 +9,7 @@
         @node-contextmenu="nodeContextmenu"
         :allow-drop="allowDrop">
       <div class="custom-tree-node" slot-scope="{ node, data }">
-<!--        编辑状态-->
+        <!--        编辑状态-->
         <template v-if="node.isEdit">
           <el-input v-model="data.label"
                     autofocus
@@ -64,6 +64,7 @@
 </template>
 
 <script>
+import json from '../static/1.json'
 let id = 1000;
 
 export default {
@@ -115,27 +116,32 @@ export default {
       ]
     }
   },
-
+  created() {
+    this.initTree()
+  },
   methods: {
-    handleEdit(_node, _data){
+    initTree() {
+        this.data=json
+    },
+    handleEdit(_node, _data) {
       // 设置编辑状态
-      if(!_node.isEdit){
+      if (!_node.isEdit) {
         this.$set(_node, 'isEdit', true)
       }
       // 输入框聚焦
       this.$nextTick(() => {
-        if(this.$refs['slotTreeInput'+_data[this.NODE_KEY]]){
-          this.$refs['slotTreeInput'+_data[this.NODE_KEY]].$refs.input.focus()
+        if (this.$refs['slotTreeInput' + _data[this.NODE_KEY]]) {
+          this.$refs['slotTreeInput' + _data[this.NODE_KEY]].$refs.input.focus()
         }
       })
     },
-    handleInput(_node, _data){
+    handleInput(_node, _data) {
       // 退出编辑状态
-      if(_node.isEdit){
+      if (_node.isEdit) {
         this.$set(_node, 'isEdit', false)
       }
     },
-    nodeContextmenu(event,data,node,obj){
+    nodeContextmenu(event, data, node, obj) {
 
     },
     //点击事件
@@ -148,7 +154,7 @@ export default {
       }
       //计时器,计算300毫秒为单位,可自行修改
       this.timer = setTimeout(() => {
-        if (this.treeClickCount == 1) {
+        if (this.treeClickCount === 1) {
           //把次数归零
           this.treeClickCount = 0;
           //单击事件处理
@@ -166,11 +172,7 @@ export default {
     },
     //限制被拖入的节点不能是文件
     allowDrop(draggingNode, dropNode, type) {
-      if (dropNode.data.icon && type == 'inner') {
-        return false
-      } else {
-        return true
-      }
+      return !(dropNode.data.icon && type === 'inner');
     },
     append(data) {
       const newChild = {id: id++, label: 'folder', children: []};
