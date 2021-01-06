@@ -64,7 +64,6 @@
 </template>
 
 <script>
-import json from '../static/1.json'
 let id = 1000;
 
 export default {
@@ -121,7 +120,6 @@ export default {
   },
   methods: {
     initTree() {
-        this.data=json
     },
     handleEdit(_node, _data) {
       // 设置编辑状态
