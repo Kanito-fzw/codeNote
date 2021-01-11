@@ -15,7 +15,9 @@
 
     <!--主界面-->
     <v-main>
-      <MainWarpper></MainWarpper>
+      <keep-alive>
+        <router-view></router-view>
+      </keep-alive>
       <!--  drawer控制按钮    -->
       <v-btn style="position: fixed;bottom:10px;right:10px"
              class="mx-2"
@@ -36,12 +38,12 @@
 <script>
 import LeftWrapper from "@/components/LeftWrapper";
 import Tabs from "@/components/Tabs";
-import MainWarpper from "@/components/MainWarpper";
+
 
 
 export default {
   components: {
-    Tabs, LeftWrapper, MainWarpper
+    Tabs, LeftWrapper
   },
   data() {
     return {

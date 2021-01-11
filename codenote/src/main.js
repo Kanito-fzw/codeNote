@@ -6,9 +6,9 @@ import store from './store'
 import vuetify from './plugins/vuetify';
 import './plugins/iview.js'
 import './plugins/element.js'
-
-
-Vue.config.productionTip = false
+import mavonEditor from 'mavon-editor'
+import 'mavon-editor/dist/css/index.css'
+Vue.use(mavonEditor)
 
 new Vue({
   router,

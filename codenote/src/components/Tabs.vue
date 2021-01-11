@@ -1,10 +1,10 @@
 <template>
-
   <el-col :span="24">
-    <el-tabs v-model="editableTabsValue" type="card" editable stretch="true" @edit="handleTabsEdit">
+    <el-tabs v-model="activeTab" ref="tabs" type="card" closable :stretch="true" @tab-remove="removeTab"
+             @tab-click="tabClick">
       <el-tab-pane
-          :key="item.name"
-          v-for="(item, index) in editableTabs"
+          v-for="(item, index) in tabsItem"
+          :key="index"
           :label="item.title"
           :name="item.name"
       >
@@ -14,47 +14,80 @@
   </el-col>
 </template>
 <script>
+import bus from '@/assets/js/bus';
+
 export default {
   data() {
     return {
-      editableTabsValue: '2',
-      editableTabs: [{
-        title: 'Tab 1',
-        name: '1',
-      }, {
-        title: 'Tab 2',
-        name: '2',
-      }],
-      tabIndex: 2
+      activeTab: '', //默认显示的tab
+      tabsItem: [],
+      tabIndex: 1
     }
   },
-  methods: {
-    handleTabsEdit(targetName, action) {
-      if (action === 'add') {
-        let newTabName = ++this.tabIndex + '';
-        this.editableTabs.push({
-          title: 'New Tab',
-          name: newTabName,
-        });
-        this.editableTabsValue = newTabName;
+  watch:{
+    tabsItem(val){
+      console.log(val.length)
+      if (val.length===0){
+        this.$router.push({
+          path: '/About'
+        })
       }
-      if (action === 'remove') {
-        let tabs = this.editableTabs;
-        let activeName = this.editableTabsValue;
-        if (activeName === targetName) {
-          tabs.forEach((tab, index) => {
-            if (tab.name === targetName) {
-              let nextTab = tabs[index + 1] || tabs[index - 1];
-              if (nextTab) {
-                activeName = nextTab.name;
-              }
-            }
-          });
+    }
+  },
+  mounted() {
+    bus.$on('label', (name, val) => {//处理传过来的值
+      let flag = true
+      this.tabsItem.forEach((item) => {
+        if (item.id === val) {
+          this.activeTab = item.name
+          flag = false
         }
-
-        this.editableTabsValue = activeName;
-        this.editableTabs = tabs.filter(tab => tab.name !== targetName);
+      })
+      if (flag) {
+        this.tabsItem.push({
+          title: name,
+          name: name,
+          id: val
+        })
+        this.activeTab = name
       }
+    })
+  },
+  methods: {
+    removeTab(targetName) { //删除Tab
+      let tabs = this.tabsItem //当前显示的tab数组
+      let activeName = this.activeTab //点前活跃的tab
+
+      //如果当前tab正活跃 被删除时执行
+      if (activeName === targetName) {
+        tabs.forEach((tab, index) => {
+          if (tab.name === targetName) {
+            let nextTab = tabs[index + 1] || tabs[index - 1]
+            if (nextTab) {
+              activeName = nextTab.name
+              this.tabClick(nextTab)
+            }
+          }
+        });
+      }
+      this.activeTab = activeName
+      this.tabsItem = tabs.filter(tab => tab.name !== targetName)
+    },
+    tabClick(thisTab) {
+      /*
+      * thisTab:当前选中的tabs的实例
+      * 通过当前选中tabs的实例获得当前实例的path 重新定位路由
+      * */
+
+      this.tabsItem.forEach((item) => {
+        if (item.name === thisTab.name) {
+          if (item.id != this.$route.path.substr(10)) {
+            this.$router.push({
+              path: '/Markdown/' + item.id
+            })
+          }
+        }
+      })
     }
   }
 }

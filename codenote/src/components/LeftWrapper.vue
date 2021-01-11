@@ -5,7 +5,7 @@
         class="pa-4"
     >
       <!--      头像-->
-      <Login></Login>
+      <Headshot></Headshot>
     </v-sheet>
     <v-tabs grow height="34">
       <v-tab>文件</v-tab>
@@ -19,11 +19,11 @@
 
 <script>
 import TreeView from "@/components/TreeView";
-import Login from "@/components/Login";
+import Headshot from "@/components/Headshot";
 
 export default {
   components: {
-    TreeView, Login
+    TreeView, Headshot
   },
 }
 </script>

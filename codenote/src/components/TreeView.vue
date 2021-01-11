@@ -65,8 +65,13 @@
 
 <script>
 let id = 1000;
+import Tabs from '@/components/Tabs'
+import bus from '@/assets/js/bus';
 
 export default {
+  components:{
+    Tabs
+  },
   data() {
     return {
       treeClickCount: 0,
@@ -115,12 +120,7 @@ export default {
       ]
     }
   },
-  created() {
-    this.initTree()
-  },
   methods: {
-    initTree() {
-    },
     handleEdit(_node, _data) {
       // 设置编辑状态
       if (!_node.isEdit) {
@@ -157,6 +157,20 @@ export default {
           this.treeClickCount = 0;
           //单击事件处理
           console.log('单击事件,可在此处理对应逻辑')
+            /*
+            * 通过当前选中tabs的实例获得当前实例的path 重新定位路由
+            * */
+          if (data.icon){
+            if (data.id==this.$route.path.substr(10)){
+              return
+            }
+            bus.$emit('label',data.label,data.id)
+            this.$router.push({
+              path: '/Markdown/'+data.id
+            })
+          }
+
+
 
         } else if (this.treeClickCount > 1) {
           //把次数归零

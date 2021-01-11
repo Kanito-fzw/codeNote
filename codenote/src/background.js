@@ -18,7 +18,10 @@ async function createWindow() {
     webPreferences: {
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
-      nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION
+      nodeIntegration: true,
+      // 在electron 10.0.0之后，remote模块默认关闭
+      // 必须手动设置webPreferences中的enableRemoteModule为true之后才能使用
+      enableRemoteModule: true, // 这里是关键设置
     }
   })
 
