@@ -1,5 +1,5 @@
 <template>
-  <div class="block">
+  <div class="block" style="height:100%; overflow: auto;">
     <el-tree
         :data="data"
         node-key="id"
