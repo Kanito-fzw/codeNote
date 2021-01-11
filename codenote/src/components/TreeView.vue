@@ -65,13 +65,9 @@
 
 <script>
 let id = 1000;
-import Tabs from '@/components/Tabs'
 import bus from '@/assets/js/bus';
 
 export default {
-  components:{
-    Tabs
-  },
   data() {
     return {
       treeClickCount: 0,
