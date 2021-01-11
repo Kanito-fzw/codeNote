@@ -6,6 +6,7 @@
         draggable
         @node-click="noteClick"
         highlight-current
+        ref="tree"
         @node-contextmenu="nodeContextmenu"
         :allow-drop="allowDrop">
       <div class="custom-tree-node" slot-scope="{ node, data }">
@@ -50,7 +51,7 @@
           <el-button
               type="text"
               size="mini"
-              @click="() => remove(node, data)">
+              @click.stop="() => remove(node, data)">
             <v-icon>
               {{ 'mdi-delete' }}
             </v-icon>
@@ -116,7 +117,17 @@ export default {
       ]
     }
   },
+  mounted() {
+    bus.$on('focus', (id) => {
+      this.focusNode(id)
+    })
+  },
   methods: {
+    focusNode(id) {
+      this.$nextTick(() => {
+        this.$refs.tree.setCurrentKey(id)
+      })
+    },
     handleEdit(_node, _data) {
       // 设置编辑状态
       if (!_node.isEdit) {
@@ -153,19 +164,18 @@ export default {
           this.treeClickCount = 0;
           //单击事件处理
           console.log('单击事件,可在此处理对应逻辑')
-            /*
-            * 通过当前选中tabs的实例获得当前实例的path 重新定位路由
-            * */
-          if (data.icon){
-            if (data.id==this.$route.path.substr(10)){
+          /*
+          * 通过当前选中tabs的实例获得当前实例的path 重新定位路由
+          * */
+          if (data.icon) {
+            if (data.id == this.$route.path.substr(10)) {
               return
             }
-            bus.$emit('label',data.label,data.id)
+            bus.$emit('add', data.label, data.id)
             this.$router.push({
-              path: '/Markdown/'+data.id
+              path: '/Markdown/' + data.id
             })
           }
-
 
 
         } else if (this.treeClickCount > 1) {
@@ -182,28 +192,44 @@ export default {
     allowDrop(draggingNode, dropNode, type) {
       return !(dropNode.data.icon && type === 'inner');
     },
+    //新增文件夹
     append(data) {
       const newChild = {id: id++, label: 'folder', children: []};
       if (!data.children && !data.icon) {
         this.$set(data, 'children', []);
       }
       if (data.icon) {
-
       } else {
-
-        data.children.push(newChild);
+        this.$prompt('请输入文件夹名', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+        }).then(({value}) => {
+          const newChild = {id: id++, label: value, children: []};
+          data.children.push(newChild);
+          this.focusNode(newChild.id.toString())
+        })
       }
     },
+    //新增文件
     appendFile(data) {
-      const newChild = {id: id++, label: 'file', icon: 'mdi-file-document-outline'};
       if (!data.children && !data.icon) {
         this.$set(data, 'children', []);
       }
       if (data.icon) {
-
       } else {
-
-        data.children.push(newChild);
+        this.$prompt('请输入文件名', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+        }).then(({value}) => {
+          const newChild = {id: id++, label: value, icon: 'mdi-file-document-outline'};
+          data.children.push(newChild);
+          //增加tabs
+          bus.$emit('add', newChild.label, newChild.id)
+          this.focusNode(newChild.id.toString())
+          this.$router.push({
+            path: '/Markdown/' + newChild.id
+          })
+        })
       }
     },
 
@@ -212,6 +238,7 @@ export default {
       const children = parent.data.children || parent.data;
       const index = children.findIndex(d => d.id === data.id);
       children.splice(index, 1);
+      bus.$emit('delete',  data.id)
     },
 
     renderContent(h, {node, data, store}) {

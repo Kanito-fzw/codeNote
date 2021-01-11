@@ -9,8 +9,6 @@ import './plugins/element.js'
 import mavonEditor from 'mavon-editor'
 import 'mavon-editor/dist/css/index.css'
 Vue.use(mavonEditor)
-import VueContextMenu from 'vue-contextmenu'
-Vue.use(VueContextMenu)
 
 new Vue({
   router,

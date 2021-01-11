@@ -4,7 +4,7 @@
              @tab-click="tabClick">
       <el-tab-pane
           v-for="(item, index) in tabsItem"
-          :key="index"
+          :key="item.id"
           :label="item.title"
           :name="item.name"
       >
@@ -26,7 +26,6 @@ export default {
   },
   watch:{
     tabsItem(val){
-      console.log(val.length)
       if (val.length===0){
         this.$router.push({
           path: '/About'
@@ -35,7 +34,7 @@ export default {
     }
   },
   mounted() {
-    bus.$on('label', (name, val) => {//处理传过来的值
+    bus.$on('add', (name, val) => {//处理传过来的值
       let flag = true
       this.tabsItem.forEach((item) => {
         if (item.id === val) {
@@ -46,11 +45,14 @@ export default {
       if (flag) {
         this.tabsItem.push({
           title: name,
-          name: name,
+          name: val.toString(),
           id: val
         })
-        this.activeTab = name
+        this.activeTab = val.toString()
       }
+    })
+    bus.$on('delete', ( val) => {
+      this.removeTab(val.toString())
     })
   },
   methods: {
@@ -82,6 +84,7 @@ export default {
       this.tabsItem.forEach((item) => {
         if (item.name === thisTab.name) {
           if (item.id != this.$route.path.substr(10)) {
+            bus.$emit('focus',item.name)
             this.$router.push({
               path: '/Markdown/' + item.id
             })

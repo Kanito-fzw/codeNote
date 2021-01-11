@@ -8,12 +8,12 @@
       <Headshot></Headshot>
     </v-sheet>
     <v-tabs grow height="34">
-      <v-tab>文件</v-tab>
-      <v-tab>目录</v-tab>
+      <v-tab @change="showTree(true)">文件</v-tab>
+      <v-tab @change="showTree(false)">目录</v-tab>
     </v-tabs>
     <v-divider></v-divider>
     <!--  树状结构-->
-    <TreeView></TreeView>
+    <TreeView v-if="showFlag"></TreeView>
   </div>
 </template>
 
@@ -25,6 +25,16 @@ export default {
   components: {
     TreeView, Headshot
   },
+  data(){
+    return{
+      showFlag:true
+    }
+  },
+  methods:{
+    showTree(showFlag){
+      this.showFlag=showFlag
+    }
+  }
 }
 </script>
 
