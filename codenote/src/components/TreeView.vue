@@ -1,5 +1,5 @@
 <template>
-  <div class="block">
+  <div class="block" style="height:100%; overflow: auto;">
     <el-tree
         :data="data"
         node-key="id"
@@ -65,13 +65,9 @@
 
 <script>
 let id = 1000;
-import Tabs from '@/components/Tabs'
 import bus from '@/assets/js/bus';
 
 export default {
-  components:{
-    Tabs
-  },
   data() {
     return {
       treeClickCount: 0,
