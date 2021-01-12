@@ -27,6 +27,10 @@ export default {
   watch:{
     tabsItem(val){
       if (val.length===0){
+        if (window.timeTrigger){
+          clearInterval(window.timeTrigger)
+          window.timeTrigger=null
+        }
         this.$router.push({
           path: '/About'
         })

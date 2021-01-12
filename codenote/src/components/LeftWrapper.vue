@@ -14,16 +14,18 @@
     <v-divider></v-divider>
     <!--  树状结构-->
     <TreeView v-if="showFlag"></TreeView>
+    <FileIndex v-if="!showFlag"></FileIndex>
   </div>
 </template>
 
 <script>
 import TreeView from "@/components/TreeView";
 import Headshot from "@/components/Headshot";
+import FileIndex from "@/components/FileIndex";
 
 export default {
   components: {
-    TreeView, Headshot
+    TreeView, Headshot,FileIndex
   },
   data(){
     return{

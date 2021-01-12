@@ -8,6 +8,7 @@ import './plugins/iview.js'
 import './plugins/element.js'
 import db from '@/plugins/datastore' // 取决于你的datastore.js的位置
 
+
 new Vue({
   router,
   store,

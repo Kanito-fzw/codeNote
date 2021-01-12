@@ -110,7 +110,9 @@ export default {
       newFileShow:true,
       x: null,
       y: null,
-      style: {},
+      style: {
+        display: 'none'
+      },
     }
   },
   watch:{
@@ -131,7 +133,6 @@ export default {
   methods: {
     //tree右键事件
     treeRightClick(MouseEvent, object, Node, element) { // 鼠标右击触发事件
-      this.$nextTick(() => {
         if (object.icon){
           this.newFileShow=false
           this.newFolderShow=false
@@ -143,21 +144,18 @@ export default {
         this.y = MouseEvent.clientY
         this.currentData=object
         this.currentNode=Node
-        console.log(object)
         this.deleteFileShow=true
         this.openRightMenu()
-      })
+
     },
     //右键事件
     rightClick(event){
-      this.$nextTick(() => {
         this.newFileShow=true
         this.newFolderShow=true
         this.deleteFileShow=false
         this.x = event.clientX
         this.y = event.clientY
         this.openRightMenu()
-      })
     },
     //显示右键
     openRightMenu(){
@@ -334,7 +332,6 @@ a {
   border: solid 1px rgba(0, 0, 0, .2);
   border-radius: 3px;
   z-index: 999;
-  display: none;
 }
 
 .right-menu a {

@@ -7,13 +7,15 @@ export default new Vuex.Store({
   state: {
     openLogin:false,
     openRegister:false,
-    openSetting:false
+    openSetting:false,
+    outline:null
 
   },
   getters:{
     openLogin: state => state.openLogin,
     openRegister: state => state.openRegister,
-    openSetting: state => state.openSetting
+    openSetting: state => state.openSetting,
+    outline: state => state.outline
   },
   mutations: {
     showOpenLogin(state,showFlag){
@@ -24,6 +26,9 @@ export default new Vuex.Store({
     },
     showOpenSetting(state,showFlag){
       state.openSetting=showFlag
+    },
+    setOutline(state,outline){
+      state.outline=outline
     }
   },
   actions: {
