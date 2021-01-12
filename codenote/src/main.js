@@ -6,9 +6,7 @@ import store from './store'
 import vuetify from './plugins/vuetify';
 import './plugins/iview.js'
 import './plugins/element.js'
-import mavonEditor from 'mavon-editor'
-import 'mavon-editor/dist/css/index.css'
-Vue.use(mavonEditor)
+import db from '@/plugins/datastore' // 取决于你的datastore.js的位置
 
 new Vue({
   router,
