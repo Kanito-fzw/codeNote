@@ -3056,11 +3056,6 @@ core-js@^3.6.5:
   resolved "https://registry.npm.taobao.org/core-js/download/core-js-3.8.1.tgz?cache=0&sync_timestamp=1607215907966&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fcore-js%2Fdownload%2Fcore-js-3.8.1.tgz#f51523668ac8a294d1285c3b9db44025fda66d47"
   integrity sha1-9RUjZorIopTRKFw7nbRAJf2mbUc=
 
-core-js@^3.8.2:
-  version "3.8.2"
-  resolved "https://registry.npm.taobao.org/core-js/download/core-js-3.8.2.tgz?cache=0&sync_timestamp=1609682065690&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fcore-js%2Fdownload%2Fcore-js-3.8.2.tgz#0a1fd6709246da9ca8eff5bb0cbd15fba9ac7044"
-  integrity sha1-Ch/WcJJG2pyo7/W7DL0V+6mscEQ=
-
 core-util-is@1.0.2, core-util-is@~1.0.0:
   version "1.0.2"
   resolved "https://registry.npm.taobao.org/core-util-is/download/core-util-is-1.0.2.tgz#b5fd54220aa2bc5ab57aab7140c940754503c1a7"
@@ -7906,7 +7901,7 @@ sass-loader@^8.0.0:
     schema-utils "^2.6.1"
     semver "^6.3.0"
 
-sass@^1.32.2:
+sass@^1.19.0:
   version "1.32.2"
   resolved "https://registry.npm.taobao.org/sass/download/sass-1.32.2.tgz#66dc0250bc86c15d19ddee7135e93d0cf3d3257b"
   integrity sha1-ZtwCULyGwV0Z3e5xNek9DPPTJXs=
@@ -9276,18 +9271,6 @@ vue-cli-plugin-vuetify@^2.0.8:
     semver "^7.1.2"
     shelljs "^0.8.3"
 
-vue-contextmenu@^1.5.10:
-  version "1.5.10"
-  resolved "https://registry.npm.taobao.org/vue-contextmenu/download/vue-contextmenu-1.5.10.tgz#b080083ba5867c68ced549a730425eaf75b98dad"
-  integrity sha1-sIAIO6WGfGjO1UmnMEJer3W5ja0=
-  dependencies:
-    vue "^2.6.9"
-
-vue-contextmenujs@^1.3.13:
-  version "1.3.13"
-  resolved "https://registry.npm.taobao.org/vue-contextmenujs/download/vue-contextmenujs-1.3.13.tgz#3bdae023c7bd42095e78da4258000250d50ab8ef"
-  integrity sha1-O9rgI8e9QgleeNpCWAACUNUKuO8=
-
 vue-highlightjs@^1.3.3:
   version "1.3.3"
   resolved "https://registry.npm.taobao.org/vue-highlightjs/download/vue-highlightjs-1.3.3.tgz#29a0d57132fc1ce15cfa61e896918f5b718c5d52"
@@ -9346,7 +9329,7 @@ vue-template-es2015-compiler@^1.9.0:
   resolved "https://registry.npm.taobao.org/vue-template-es2015-compiler/download/vue-template-es2015-compiler-1.9.1.tgz#1ee3bc9a16ecbf5118be334bb15f9c46f82f5825"
   integrity sha1-HuO8mhbsv1EYvjNLsV+cRvgvWCU=
 
-vue@^2.6.11, vue@^2.6.9:
+vue@^2.6.11:
   version "2.6.12"
   resolved "https://registry.npm.taobao.org/vue/download/vue-2.6.12.tgz?cache=0&sync_timestamp=1606946259454&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fvue%2Fdownload%2Fvue-2.6.12.tgz#f5ebd4fa6bd2869403e29a896aed4904456c9123"
   integrity sha1-9evU+mvShpQD4pqJau1JBEVskSM=
@@ -9359,7 +9342,7 @@ vuetify-loader@^1.3.0:
     file-loader "^4.0.0"
     loader-utils "^1.2.0"
 
-vuetify@^2.4.2:
+vuetify@^2.2.11:
   version "2.4.2"
   resolved "https://registry.npm.taobao.org/vuetify/download/vuetify-2.4.2.tgz#d37d160c1fc6b241fc166a32980b34590a017d6e"
   integrity sha1-030WDB/GskH8FmoymAs0WQoBfW4=

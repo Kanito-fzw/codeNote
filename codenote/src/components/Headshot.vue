@@ -31,25 +31,34 @@
                   mdi-account-circle
                 </v-icon>
               </v-avatar>
-              <h3>{{ user.fullName }}</h3>
+              <h3>{{ user.userName }}</h3>
               <p class="caption mt-1">
-                {{ user.email }}
+                {{ user.phone }}
               </p>
               <v-divider class="my-3"></v-divider>
               <v-btn
                   depressed
                   rounded
                   text
+                  @click="openRegister"
               >
                 注册
               </v-btn>
-              <v-divider class="my-3"></v-divider>
               <v-btn
                   depressed
                   rounded
                   text
+                  @click="openLogin"
               >
               登录
+              </v-btn>
+              <v-btn
+                  depressed
+                  rounded
+                  text
+                  @click="openSetting"
+              >
+              设置
               </v-btn>
             </div>
           </v-list-item-content>
@@ -57,19 +66,30 @@
       </v-menu>
     </v-row>
     <v-row justify="center">
-     未登录
+      未登录
     </v-row>
   </v-container>
 </template>
 
 <script>
+
 export default {
   data: () => ({
     user: {
-      initials: 'JD',
-      fullName: 'John Doe',
-      email: 'john.doe@doe.com',
+      userName: 'John Doe',
+      phone: 'john.doe@doe.com',
     },
   }),
+  methods:{
+    openLogin(){
+      this.$store.commit('showOpenLogin',true)
+    },
+    openRegister(){
+      this.$store.commit('showOpenRegister',true)
+    },
+    openSetting(){
+      this.$store.commit('showOpenSetting',true)
+    }
+  }
 }
 </script>

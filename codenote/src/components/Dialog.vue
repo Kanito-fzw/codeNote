@@ -1,13 +1,13 @@
 <template>
   <v-row justify="center">
     <v-dialog
-        v-model="openSetting"
+        v-model="dialog"
         persistent
         max-width="600px"
     >
       <v-card>
         <v-card-title>
-          <span class="headline">设置</span>
+          <span class="headline">User Profile</span>
         </v-card-title>
         <v-card-text>
           <v-container>
@@ -88,14 +88,14 @@
               text
               @click="hiddenDialog"
           >
-            保存
+            Close
           </v-btn>
           <v-btn
               color="blue darken-1"
               text
               @click="hiddenDialog"
           >
-            关闭
+            Save
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -107,13 +107,13 @@ export default {
   data: () => ({
   }),
   computed:{
-    openSetting(){
-      return this.$store.getters.openSetting;
+    dialog(){
+      return this.$store.getters.dialog;
     }
   },
   methods:{
     hiddenDialog(){
-      this.$store.commit('showOpenSetting',false)
+      this.$store.commit('showDialog',false)
     }
   }
 }

@@ -1,13 +1,14 @@
 <template>
-  <div class="block" style="height:100%; overflow: auto;">
+  <div class="block" style="height:100%; overflow: auto;" ref="block" @contextmenu="rightClick">
     <el-tree
+        id="tree"
         :data="data"
         node-key="id"
         draggable
         @node-click="noteClick"
-        highlight-current
+        :highlight-current="true"
         ref="tree"
-        @node-contextmenu="nodeContextmenu"
+        @node-contextmenu="treeRightClick"
         :allow-drop="allowDrop">
       <div class="custom-tree-node" slot-scope="{ node, data }">
         <!--        编辑状态-->
@@ -29,46 +30,32 @@
       <v-icon v-else>
         {{ data.icon }}
       </v-icon>  {{ node.label }}</span>
-          <span>
-          <el-button
-              v-if="!data.icon"
-              type="text"
-              size="mini"
-              @click.stop="() => appendFile(data)">
-            <v-icon>
-              {{ 'mdi-file-plus-outline' }}
-            </v-icon>
-          </el-button>
-          <el-button
-              v-if="!data.icon"
-              type="text"
-              size="mini"
-              @click.stop="() => append(data)">
-            <v-icon>
-              {{ 'mdi-folder-plus' }}
-            </v-icon>
-          </el-button>
-          <el-button
-              type="text"
-              size="mini"
-              @click.stop="() => remove(node, data)">
-            <v-icon>
-              {{ 'mdi-delete' }}
-            </v-icon>
-          </el-button>
-        </span>
         </template>
 
       </div>
+
     </el-tree>
+    <div
+        id="right-menu"
+        class="right-menu"
+        :style="style"
+        v-show="contextMenuVisible">
+      <a href="javascript:;" @click="newFolder" v-show="newFolderShow">创建文件夹</a>
+      <a href="javascript:;" @click="newFile" v-show="newFileShow">创建文件</a>
+      <a href="javascript:;" @click="deleteFile" v-show="deleteFileShow">删除</a>
+    </div>
   </div>
 </template>
 
 <script>
 let id = 1000;
 import bus from '@/assets/js/bus';
+import {component as VueContextMenu} from '@xunlei/vue-context-menu'
 
 export default {
+  components: {
+    'context-menu': VueContextMenu
+  },
   data() {
     return {
       treeClickCount: 0,
@@ -114,7 +101,26 @@ export default {
             icon: 'mdi-file-document-outline',
           }]
         }
-      ]
+      ],
+      contextMenuVisible: false,
+      currentNode: '',
+      currentData: '',
+      deleteFileShow: false,
+      newFolderShow:true,
+      newFileShow:true,
+      x: null,
+      y: null,
+      style: {},
+    }
+  },
+  watch:{
+    contextMenuVisible(val){
+      if (val){
+        document.body.addEventListener('click',this.closRightMenu)
+      }
+      else {
+        document.body.removeEventListener('click',this.closRightMenu)
+      }
     }
   },
   mounted() {
@@ -123,6 +129,68 @@ export default {
     })
   },
   methods: {
+    //tree右键事件
+    treeRightClick(MouseEvent, object, Node, element) { // 鼠标右击触发事件
+      this.$nextTick(() => {
+        if (object.icon){
+          this.newFileShow=false
+          this.newFolderShow=false
+        }else {
+          this.newFileShow=true
+          this.newFolderShow=true
+        }
+        this.x = MouseEvent.clientX
+        this.y = MouseEvent.clientY
+        this.currentData=object
+        this.currentNode=Node
+        console.log(object)
+        this.deleteFileShow=true
+        this.openRightMenu()
+      })
+    },
+    //右键事件
+    rightClick(event){
+      this.$nextTick(() => {
+        this.newFileShow=true
+        this.newFolderShow=true
+        this.deleteFileShow=false
+        this.x = event.clientX
+        this.y = event.clientY
+        this.openRightMenu()
+      })
+    },
+    //显示右键
+    openRightMenu(){
+      this.style = {
+        left: this.x + 'px',
+        top: this.y + 'px',
+        display: this.contextMenuVisible ? 'block' : 'none'
+      }
+      this.contextMenuVisible=true
+    },
+    //隐藏右键
+    closRightMenu(){
+      this.contextMenuVisible=false
+      this.deleteFileShow=false
+    },
+    newFolder() {
+      if (this.deleteFileShow){
+        this.append(this.currentData)
+      }
+      this.contextMenuVisible = false
+    },
+    newFile() {
+      if (this.deleteFileShow){
+        this.appendFile(this.currentData)
+      }
+      this.contextMenuVisible = false
+    },
+    deleteFile() {
+      if (this.deleteFileShow){
+        this.remove(this.currentNode,this.currentData)
+      }
+      this.contextMenuVisible = false
+    },
     focusNode(id) {
       this.$nextTick(() => {
         this.$refs.tree.setCurrentKey(id)
@@ -146,9 +214,7 @@ export default {
         this.$set(_node, 'isEdit', false)
       }
     },
-    nodeContextmenu(event, data, node, obj) {
 
-    },
     //点击事件
     noteClick(data, node, obj) {
       //记录点击次数
@@ -194,7 +260,6 @@ export default {
     },
     //新增文件夹
     append(data) {
-      const newChild = {id: id++, label: 'folder', children: []};
       if (!data.children && !data.icon) {
         this.$set(data, 'children', []);
       }
@@ -212,6 +277,7 @@ export default {
     },
     //新增文件
     appendFile(data) {
+      console.log(data)
       if (!data.children && !data.icon) {
         this.$set(data, 'children', []);
       }
@@ -221,8 +287,10 @@ export default {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
         }).then(({value}) => {
+          console.log('push')
           const newChild = {id: id++, label: value, icon: 'mdi-file-document-outline'};
           data.children.push(newChild);
+          console.log(data)
           //增加tabs
           bus.$emit('add', newChild.label, newChild.id)
           this.focusNode(newChild.id.toString())
@@ -238,7 +306,7 @@ export default {
       const children = parent.data.children || parent.data;
       const index = children.findIndex(d => d.id === data.id);
       children.splice(index, 1);
-      bus.$emit('delete',  data.id)
+      bus.$emit('delete', data.id)
     },
 
     renderContent(h, {node, data, store}) {
@@ -256,12 +324,53 @@ export default {
 </script>
 
 <style>
-.custom-tree-node {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 14px;
-  padding-right: 8px;
+a {
+  color: #333;
+}
+
+.right-menu {
+  position: fixed;
+  background: #fff;
+  border: solid 1px rgba(0, 0, 0, .2);
+  border-radius: 3px;
+  z-index: 999;
+  display: none;
+}
+
+.right-menu a {
+  width: 75px;
+  height: 28px;
+  line-height: 28px;
+  text-align: center;
+  display: block;
+  color: #1a1a1a;
+}
+
+.right-menu a:hover {
+  background: #eee;
+  color: #fff;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+.right-menu {
+  border: 1px solid #eee;
+  box-shadow: 0 0.5em 1em 0 rgba(0, 0, 0, .1);
+  border-radius: 1px;
+}
+
+a {
+  text-decoration: none;
+}
+
+.right-menu a {
+  padding: 2px;
+}
+
+.right-menu a:hover {
+  background: darkgrey;
 }
 </style>

@@ -1,13 +1,13 @@
 <template>
   <v-row justify="center">
     <v-dialog
-        v-model="openLogin"
+        v-model="openRegister"
         persistent
         max-width="600px"
     >
       <v-card>
         <v-card-title>
-          <span class="headline">登录</span>
+          <span class="headline">注册</span>
         </v-card-title>
         <v-card-text>
           <v-form
@@ -24,6 +24,17 @@
                       :counter="11"
                       :rules="phoneRules"
                       label="手机号"
+                      required
+                  ></v-text-field>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="2">
+                  <v-text-field
+                      v-model="user.userName"
+                      name="userName"
+                      :rules="userNameRules"
+                      label="用户名"
                       required
                   ></v-text-field>
                 </td>
@@ -76,7 +87,7 @@
                     class="mr-4"
                     @click="submit"
                 >
-                  登录
+                  注册
                 </v-btn>
 
                 <v-btn
@@ -95,9 +106,6 @@
                 </v-btn>
               </tr>
             </table>
-
-
-
           </v-form>
         </v-card-text>
       </v-card>
@@ -113,12 +121,18 @@ export default {
     second: 60, // 倒计时间
     user:{
       phone: '',
+      userName:'',
       password: '',
       checkCode: '',
     },
     phoneRules: [
       v => !!v || '请输入手机号',
       v => (v && v.length === 11) || '手机号错误',
+    ],
+    userNameRules: [
+      v => !!v || '请输入用户名',
+      v => (v && v.length >= 6) || '用户名需要大于6位',
+      v => v.search(/\s/) === -1 || "不能有空格"
     ],
 
     passwordRules: [
@@ -149,11 +163,11 @@ export default {
       if (this.sending) { return }
       this.sending = true
       // $ajax.post('',this.user.phone).then(response => {
-        this.timeDown()
-        this.$message({
-          type: 'success',
-          message: '短信发送成功'
-        })
+      this.timeDown()
+      this.$message({
+        type: 'success',
+        message: '短信发送成功'
+      })
       // })
     },
     // 倒计时
@@ -179,12 +193,12 @@ export default {
     },
     //关闭
     hiddenDialog() {
-      this.$store.commit('showOpenLogin', false)
+      this.$store.commit('showOpenRegister', false)
     }
   },
   computed: {
-    openLogin() {
-      return this.$store.getters.openLogin;
+    openRegister() {
+      return this.$store.getters.openRegister;
     }
   }
 }

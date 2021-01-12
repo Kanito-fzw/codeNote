@@ -32,18 +32,24 @@
         </v-icon>
       </v-btn>
     </v-main>
+    <Login></Login>
+    <Register></Register>
+    <Setting></Setting>
   </v-app>
 </template>
 
 <script>
 import LeftWrapper from "@/components/LeftWrapper";
 import Tabs from "@/components/Tabs";
+import Login from "@/views/Login";
+import Register from "@/views/Register";
+import Setting from "@/views/Setting";
 
 
 
 export default {
   components: {
-    Tabs, LeftWrapper
+    Tabs, LeftWrapper,Login,Register,Setting
   },
   data() {
     return {
