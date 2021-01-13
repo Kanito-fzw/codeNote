@@ -1,10 +1,11 @@
 'use strict'
 
-import { app, protocol, BrowserWindow } from 'electron'
+import { app, protocol, BrowserWindow,ipcMain  } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
-
+import fs from 'fs-extra'
+import path from 'path'
 
 
 // Scheme must be registered before the app is ready
@@ -82,3 +83,18 @@ if (isDevelopment) {
     })
   }
 }
+ipcMain.on('asynchronous-message', function(event, arg) {
+  // arg是从渲染进程返回来的数据
+  console.log(arg);
+
+  // 这里是传给渲染进程的数据
+  fs.readFile(path.join(__dirname,"../renderer/data/data.json"),"utf8",(err,data)=>{
+    if(err){
+      event.sender.send('asynchronous-reply', "读取失败"+arg);
+    }else{
+      event.sender.send('asynchronous-reply', data+arg);
+    }
+
+  })
+
+});
