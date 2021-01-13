@@ -16,7 +16,7 @@
           <el-input v-model="data.label"
                     autofocus
                     size="mini"
-                    :ref="'slotTreeInput'+data[NODE_KEY]"
+                    :ref="'slotTreeInput'+data"
                     @blur.stop="handleInput(node, data)"
                     @keyup.enter.native="handleInput(node, data)"></el-input>
         </template>
@@ -42,6 +42,7 @@
         v-show="contextMenuVisible">
       <a href="javascript:;" @click="newFolder" v-show="newFolderShow">创建文件夹</a>
       <a href="javascript:;" @click="newFile" v-show="newFileShow">创建文件</a>
+      <a href="javascript:;" @click="reNameFile" v-show="deleteFileShow">重命名</a>
       <a href="javascript:;" @click="deleteFile" v-show="deleteFileShow">删除</a>
     </div>
   </div>
@@ -161,6 +162,12 @@ export default {
       }
       this.contextMenuVisible = false
     },
+    reNameFile(){
+      if (this.deleteFileShow) {
+        this.handleEdit(this.currentNode, this.currentData)
+      }
+      this.contextMenuVisible = false
+    },
     deleteFile() {
       if (this.deleteFileShow) {
         this.remove(this.currentNode, this.currentData)
@@ -179,8 +186,8 @@ export default {
       }
       // 输入框聚焦
       this.$nextTick(() => {
-        if (this.$refs['slotTreeInput' + _data[this.NODE_KEY]]) {
-          this.$refs['slotTreeInput' + _data[this.NODE_KEY]].$refs.input.focus()
+        if (this.$refs['slotTreeInput' + _data]) {
+          this.$refs['slotTreeInput' + _data].$refs.input.focus()
         }
       })
     },
@@ -189,6 +196,7 @@ export default {
       if (_node.isEdit) {
         this.$set(_node, 'isEdit', false)
       }
+      this.saveLocalStorage()
     },
 
     //点击事件
@@ -305,6 +313,7 @@ export default {
       })
     },
 
+    //删除节点并关闭tab
     remove(node, data) {
       const parent = node.parent;
       const children = parent.data.children || parent.data;
@@ -313,6 +322,7 @@ export default {
       this.closeTabs(data)
 
     },
+    //关闭子节点tab
     closeTabs(data) {
       if (data.children && data.children.length && data.children.length > 0) {
         for (let i = 0; i < data.children.length; i++) {
