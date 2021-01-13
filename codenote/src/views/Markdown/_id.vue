@@ -114,7 +114,6 @@ export default {
         }
         window.timeTrigger = setInterval(() => {
           if (this.titleHtml !== $(".vditor-outline__content").html()) {
-            console.log('222')
             this.titleHtml = $(".vditor-outline__content").html()
             this.$store.commit('setOutline', this.sendTitles())
           }

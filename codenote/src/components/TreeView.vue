@@ -2,7 +2,7 @@
   <div class="block" style="height:100%; overflow: auto;" ref="block" @contextmenu="rightClick">
     <el-tree
         id="tree"
-        :data="data"
+        :data="treeTitles"
         node-key="id"
         draggable
         @node-click="noteClick"
@@ -48,7 +48,7 @@
 </template>
 
 <script>
-let id = 1000;
+let id = window.localStorage.getItem('startId') || 1000;
 import bus from '@/assets/js/bus';
 import {component as VueContextMenu} from '@xunlei/vue-context-menu'
 
@@ -59,55 +59,13 @@ export default {
   data() {
     return {
       treeClickCount: 0,
-      data: [
-        {
-          id: 1,
-          label: '一级 1',
-          children: [{
-            id: 4,
-            label: '二级 1-1',
-            children: [{
-              id: 9,
-              label: '三级 1-1-1',
-              icon: 'mdi-file-document-outline',
-            }, {
-              id: 10,
-              label: '三级 1-1-2',
-              icon: 'mdi-file-document-outline',
-            }]
-          }]
-        }, {
-          id: 2,
-          label: '一级 2',
-          children: [{
-            id: 5,
-            label: '二级 2-1',
-            icon: 'mdi-file-document-outline',
-          }, {
-            id: 6,
-            label: '二级 2-2',
-            icon: 'mdi-file-document-outline',
-          }]
-        }, {
-          id: 3,
-          label: '一级 3',
-          children: [{
-            id: 7,
-            label: '二级 3-1',
-            icon: 'mdi-file-document-outline',
-          }, {
-            id: 8,
-            label: '二级 3-2',
-            icon: 'mdi-file-document-outline',
-          }]
-        }
-      ],
+      treeTitles: [],
       contextMenuVisible: false,
       currentNode: '',
       currentData: '',
       deleteFileShow: false,
-      newFolderShow:true,
-      newFileShow:true,
+      newFolderShow: true,
+      newFileShow: true,
       x: null,
       y: null,
       style: {
@@ -115,13 +73,12 @@ export default {
       },
     }
   },
-  watch:{
-    contextMenuVisible(val){
-      if (val){
-        document.body.addEventListener('click',this.closRightMenu)
-      }
-      else {
-        document.body.removeEventListener('click',this.closRightMenu)
+  watch: {
+    contextMenuVisible(val) {
+      if (val) {
+        document.body.addEventListener('click', this.closRightMenu)
+      } else {
+        document.body.removeEventListener('click', this.closRightMenu)
       }
     }
   },
@@ -129,63 +86,84 @@ export default {
     bus.$on('focus', (id) => {
       this.focusNode(id)
     })
+    if (this.treeTitles === null || this.treeTitles.length === 0) {
+      let item = JSON.parse(window.localStorage.getItem('titleTree'));
+      if (item.length !== 0) {
+        this.treeTitles = item
+      }
+    }
+  },
+  updated() {
+    this.saveLocalStorage()
+  },
+  beforeDestroy() {
+    this.saveLocalStorage()
   },
   methods: {
+    //保存数据
+    saveLocalStorage() {
+      window.localStorage.setItem('startId', id)
+      window.localStorage.setItem('titleTree', JSON.stringify(this.treeTitles))
+    },
     //tree右键事件
     treeRightClick(MouseEvent, object, Node, element) { // 鼠标右击触发事件
-        if (object.icon){
-          this.newFileShow=false
-          this.newFolderShow=false
-        }else {
-          this.newFileShow=true
-          this.newFolderShow=true
-        }
-        this.x = MouseEvent.clientX
-        this.y = MouseEvent.clientY
-        this.currentData=object
-        this.currentNode=Node
-        this.deleteFileShow=true
-        this.openRightMenu()
+      if (object.icon) {
+        this.newFileShow = false
+        this.newFolderShow = false
+      } else {
+        this.newFileShow = true
+        this.newFolderShow = true
+      }
+      this.x = MouseEvent.clientX
+      this.y = MouseEvent.clientY
+      this.currentData = object
+      this.currentNode = Node
+      this.deleteFileShow = true
+      this.openRightMenu()
 
     },
     //右键事件
-    rightClick(event){
-        this.newFileShow=true
-        this.newFolderShow=true
-        this.deleteFileShow=false
-        this.x = event.clientX
-        this.y = event.clientY
-        this.openRightMenu()
+    rightClick(event) {
+      this.newFileShow = true
+      this.newFolderShow = true
+      this.deleteFileShow = false
+      this.x = event.clientX
+      this.y = event.clientY
+      this.openRightMenu()
     },
     //显示右键
-    openRightMenu(){
+    openRightMenu() {
       this.style = {
         left: this.x + 'px',
         top: this.y + 'px',
         display: this.contextMenuVisible ? 'block' : 'none'
       }
-      this.contextMenuVisible=true
+      this.contextMenuVisible = true
     },
     //隐藏右键
-    closRightMenu(){
-      this.contextMenuVisible=false
-      this.deleteFileShow=false
+    closRightMenu() {
+      this.contextMenuVisible = false
+      this.deleteFileShow = false
     },
     newFolder() {
-      if (this.deleteFileShow){
+      if (this.deleteFileShow) {
         this.append(this.currentData)
+      } else {
+        this.appendRoot()
       }
       this.contextMenuVisible = false
     },
     newFile() {
-      if (this.deleteFileShow){
+      if (this.deleteFileShow) {
         this.appendFile(this.currentData)
+      } else {
+        this.appendRootFile()
       }
       this.contextMenuVisible = false
     },
     deleteFile() {
-      if (this.deleteFileShow){
-        this.remove(this.currentNode,this.currentData)
+      if (this.deleteFileShow) {
+        this.remove(this.currentNode, this.currentData)
       }
       this.contextMenuVisible = false
     },
@@ -269,13 +247,13 @@ export default {
         }).then(({value}) => {
           const newChild = {id: id++, label: value, children: []};
           data.children.push(newChild);
+          this.saveLocalStorage()
           this.focusNode(newChild.id.toString())
         })
       }
     },
     //新增文件
     appendFile(data) {
-      console.log(data)
       if (!data.children && !data.icon) {
         this.$set(data, 'children', []);
       }
@@ -285,10 +263,9 @@ export default {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
         }).then(({value}) => {
-          console.log('push')
           const newChild = {id: id++, label: value, icon: 'mdi-file-document-outline'};
           data.children.push(newChild);
-          console.log(data)
+          this.saveLocalStorage()
           //增加tabs
           bus.$emit('add', newChild.label, newChild.id)
           this.focusNode(newChild.id.toString())
@@ -298,13 +275,51 @@ export default {
         })
       }
     },
+    //根路径新增文件夹
+    appendRoot() {
+      this.$prompt('请输入文件夹名', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+      }).then(({value}) => {
+        const newChild = {id: id++, label: value, children: []};
+        this.treeTitles.push(newChild);
+        this.saveLocalStorage()
+        this.focusNode(newChild.id.toString())
+      })
+    },
+    //根路径新增文件
+    appendRootFile() {
+      this.$prompt('请输入文件名', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+      }).then(({value}) => {
+        const newChild = {id: id++, label: value, icon: 'mdi-file-document-outline'};
+        this.treeTitles.push(newChild);
+        this.saveLocalStorage()
+        //增加tabs
+        bus.$emit('add', newChild.label, newChild.id)
+        this.focusNode(newChild.id.toString())
+        this.$router.push({
+          path: '/Markdown/' + newChild.id
+        })
+      })
+    },
 
     remove(node, data) {
       const parent = node.parent;
       const children = parent.data.children || parent.data;
       const index = children.findIndex(d => d.id === data.id);
       children.splice(index, 1);
-      bus.$emit('delete', data.id)
+      this.closeTabs(data)
+
+    },
+    closeTabs(data) {
+      if (data.children && data.children.length && data.children.length > 0) {
+        for (let i = 0; i < data.children.length; i++) {
+          bus.$emit('delete', data.children[i].id)
+          this.closeTabs(data.children[i])
+        }
+      }
     },
 
     renderContent(h, {node, data, store}) {
