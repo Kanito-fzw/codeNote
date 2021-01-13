@@ -59,11 +59,13 @@ export default {
   },
   data() {
     return {
+      breadList:[],     //面包屑数组
+      breadLabel:'',     //面包屑路径
       treeClickCount: 0,
-      treeTitles: [],
-      contextMenuVisible: false,
-      currentNode: '',
-      currentData: '',
+      treeTitles: [], //tree数据
+      contextMenuVisible: false,//显示右键
+      currentNode: '',//右键选中节点
+      currentData: '',//右键选中节点数据
       deleteFileShow: false,
       newFolderShow: true,
       newFileShow: true,
@@ -177,26 +179,55 @@ export default {
     focusNode(id) {
       this.$nextTick(() => {
         this.$refs.tree.setCurrentKey(id)
+        this.changeDept(this.$refs.tree.getCurrentNode())
       })
     },
+    //重命名输入状态
     handleEdit(_node, _data) {
-      // 设置编辑状态
       if (!_node.isEdit) {
         this.$set(_node, 'isEdit', true)
       }
-      // 输入框聚焦
       this.$nextTick(() => {
         if (this.$refs['slotTreeInput' + _data]) {
           this.$refs['slotTreeInput' + _data].$refs.input.focus()
         }
       })
     },
+    //重命名完成
     handleInput(_node, _data) {
       // 退出编辑状态
       if (_node.isEdit) {
         this.$set(_node, 'isEdit', false)
       }
+      //如果是当前选中节点还要修改面包屑和tab
+      if (_data.icon){
+        if (_data.id===this.$refs.tree.getCurrentNode().id){
+          this.changeDept(_data)
+          this.$router.push({
+            path: '/Markdown/' + _data.id+'?a='+ _data.label
+          })
+        }
+        bus.$emit('reName', _data.id, _data.label)
+      }
       this.saveLocalStorage()
+    },
+    //更新面包屑路径
+    changeDept(data){
+      let tree = this.$refs.tree;
+      this.breadList = []; //初始化
+      this.getTreeNode(tree.getNode(data));
+      this.breadLabel='home>'+this.breadLabel
+      window.localStorage.setItem('breadLabel', this.breadLabel)
+    },
+    //获取当前树节点和其父级节点
+    getTreeNode(node){
+      if (node) {
+        if (node.label !== undefined) {
+          this.breadList.unshift(node.label); //在数组头部添加元素
+          this.getTreeNode(node.parent); //递归
+          this.breadLabel=this.breadList.join('>');
+        }
+      }
     },
 
     //点击事件
@@ -214,16 +245,17 @@ export default {
           this.treeClickCount = 0;
           //单击事件处理
           console.log('单击事件,可在此处理对应逻辑')
+          this.changeDept(data)
           /*
           * 通过当前选中tabs的实例获得当前实例的path 重新定位路由
           * */
           if (data.icon) {
             if (data.id == this.$route.path.substr(10)) {
-              return
+              return false
             }
             bus.$emit('add', data.label, data.id)
             this.$router.push({
-              path: '/Markdown/' + data.id
+              path: '/Markdown/' + data.id+'?a='+data.label
             })
           }
 
@@ -277,8 +309,10 @@ export default {
           //增加tabs
           bus.$emit('add', newChild.label, newChild.id)
           this.focusNode(newChild.id.toString())
-          this.$router.push({
-            path: '/Markdown/' + newChild.id
+          this.$nextTick(() => {
+            this.$router.push({
+              path: '/Markdown/' + newChild.id
+            })
           })
         })
       }
@@ -307,9 +341,12 @@ export default {
         //增加tabs
         bus.$emit('add', newChild.label, newChild.id)
         this.focusNode(newChild.id.toString())
-        this.$router.push({
-          path: '/Markdown/' + newChild.id
-        })
+            this.$nextTick(() => {
+              this.$router.push({
+                path: '/Markdown/' + newChild.id
+              })
+            })
+
       })
     },
 
@@ -319,6 +356,7 @@ export default {
       const children = parent.data.children || parent.data;
       const index = children.findIndex(d => d.id === data.id);
       children.splice(index, 1);
+      bus.$emit('delete', data.id)
       this.closeTabs(data)
 
     },

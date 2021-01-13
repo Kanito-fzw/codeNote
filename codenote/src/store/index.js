@@ -8,14 +8,16 @@ export default new Vuex.Store({
     openLogin:false,
     openRegister:false,
     openSetting:false,
-    outline:null
+    outline:null,
+    breadcrumb:[]
 
   },
   getters:{
     openLogin: state => state.openLogin,
     openRegister: state => state.openRegister,
     openSetting: state => state.openSetting,
-    outline: state => state.outline
+    outline: state => state.outline,
+    breadcrumb: state => state.breadcrumb
   },
   mutations: {
     showOpenLogin(state,showFlag){
@@ -29,6 +31,9 @@ export default new Vuex.Store({
     },
     setOutline(state,outline){
       state.outline=outline
+    },
+    setBreadcrumb(state,breadcrumb){
+      state.breadcrumb=breadcrumb
     }
   },
   actions: {
