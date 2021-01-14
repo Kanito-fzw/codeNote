@@ -15,9 +15,7 @@
 
     <!--主界面-->
     <v-main>
-      <keep-alive>
         <router-view></router-view>
-      </keep-alive>
       <!--  drawer控制按钮    -->
       <v-btn style="position: fixed;bottom:10px;right:10px"
              class="mx-2"
