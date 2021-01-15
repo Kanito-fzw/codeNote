@@ -1,5 +1,5 @@
 <template>
-  <div style="height:100%; overflow: hidden;">
+  <div  style="height:100%; overflow: hidden;">
     <v-sheet
         color="grey lighten-4"
         class="pa-4"

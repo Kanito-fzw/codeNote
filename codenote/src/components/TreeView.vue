@@ -1,5 +1,5 @@
 <template>
-  <div class="block" style="height:100%; overflow: auto;" ref="block" @contextmenu="rightClick">
+  <div class="block" style="height:80%; overflow: auto;" ref="block" @contextmenu="rightClick">
     <el-tree
         id="tree"
         :data="treeTitles"
@@ -35,10 +35,9 @@
       </div>
 
     </el-tree>
-    <el-dropdown-menu
+    <div class="el-dropdown-menu"
         slot="dropdown"
         id="right-menu"
-        class="right-menu"
         :style="style"
         v-show="contextMenuVisible"
     >
@@ -46,7 +45,11 @@
       <el-dropdown-item @click.native="newFile" v-show="newFileShow" >创建文件</el-dropdown-item>
       <el-dropdown-item @click.native="reNameFile" v-show="deleteFileShow" >重命名</el-dropdown-item>
       <el-dropdown-item @click.native="deleteFile" v-show="deleteFileShow">删除</el-dropdown-item>
-    </el-dropdown-menu>
+    </div>
+    <br>
+    <br>
+    <br>
+
   </div>
 </template>
 
@@ -376,19 +379,8 @@ export default {
       }
     },
 
-    renderContent(h, {node, data, store}) {
-      return (
-          <span class="custom-tree-node">
-          <span>{node.label}</span>
-          <span>
-          <el-button size="mini" type="text" on-click={() => this.append(data)}>Append</el-button>
-      <el-button size="mini" type="text" on-click={() => this.remove(node, data)}>Delete</el-button>
-      </span>
-      </span>);
-    },
-
-    create_markdownFile(id) {
-      this.$db.postContent(id.toString(),'')
+    create_markdownFile(id,content) {
+      this.$db.postContent(id.toString(),content||'')
     },
     delete_markdownFile(data){
       if (data.icon){
@@ -409,6 +401,5 @@ html,
 body {
   height: 100%;
 }
-
 
 </style>

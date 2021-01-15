@@ -14,52 +14,20 @@
             <v-row>
               <v-col
                   cols="12"
-                  sm="6"
-                  md="4"
+                  sm="8"
               >
-                <v-text-field
-                    label="Legal first name*"
-                    required
-                ></v-text-field>
+                <v-select
+                    :items="['abap', 'algol', 'algol_nu', 'api', 'arduino', 'autumn', 'borland', 'bw', 'colorful',
+                        'dracula', 'emacs', 'friendly', 'fruity', 'github', 'igor', 'lovelace', 'manni', 'monokai',
+                        'monokailight', 'murphy', 'native', 'paraiso-dark', 'paraiso-light', 'pastie', 'perldoc', 'pygments',
+                        'rainbow_dash', 'rrt', 'solarized-dark', 'solarized-dark256', 'solarized-light', 'swapoff', 'tango',
+                        'trac', 'vim', 'vs', 'xcode']"
+                    label="代码块样式"
+                ></v-select>
               </v-col>
               <v-col
                   cols="12"
-                  sm="6"
-                  md="4"
-              >
-                <v-text-field
-                    label="Legal middle name"
-                    hint="example of helper text only on focus"
-                ></v-text-field>
-              </v-col>
-              <v-col
-                  cols="12"
-                  sm="6"
-                  md="4"
-              >
-                <v-text-field
-                    label="Legal last name*"
-                    hint="example of persistent helper text"
-                    persistent-hint
-                    required
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12">
-                <v-text-field
-                    label="Email*"
-                    required
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12">
-                <v-text-field
-                    label="Password*"
-                    type="password"
-                    required
-                ></v-text-field>
-              </v-col>
-              <v-col
-                  cols="12"
-                  sm="6"
+                  sm="8"
               >
                 <v-select
                     :items="['0-17', '18-29', '30-54', '54+']"
@@ -69,7 +37,7 @@
               </v-col>
               <v-col
                   cols="12"
-                  sm="6"
+                  sm="8"
               >
                 <v-autocomplete
                     :items="['Skiing', 'Ice hockey', 'Soccer', 'Basketball', 'Hockey', 'Reading', 'Writing', 'Coding', 'Basejump']"
@@ -79,7 +47,6 @@
               </v-col>
             </v-row>
           </v-container>
-          <small>*indicates required field</small>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -104,16 +71,15 @@
 </template>
 <script>
 export default {
-  data: () => ({
-  }),
-  computed:{
-    openSetting(){
+  data: () => ({}),
+  computed: {
+    openSetting() {
       return this.$store.getters.openSetting;
     }
   },
-  methods:{
-    hiddenDialog(){
-      this.$store.commit('showOpenSetting',false)
+  methods: {
+    hiddenDialog() {
+      this.$store.commit('showOpenSetting', false)
     }
   }
 }

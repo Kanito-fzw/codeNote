@@ -4,12 +4,13 @@
     <v-navigation-drawer
         v-model="drawer"
         app
+        id="leftWrapper"
     >
       <LeftWrapper></LeftWrapper>
     </v-navigation-drawer>
 
     <!--    标签栏-->
-    <v-app-bar app style="background: white" min-width="300" height="34">
+    <v-app-bar app min-width="300" height="34">
       <Tabs></Tabs>
     </v-app-bar>
 
@@ -57,3 +58,8 @@ export default {
 
 }
 </script>
+<style>
+.v-app-bar{
+  background: white!important;
+}
+</style>
