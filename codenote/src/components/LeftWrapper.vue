@@ -9,7 +9,7 @@
     </v-sheet>
     <v-tabs grow height="34">
       <v-tab @change="showTree(true)">文件</v-tab>
-      <v-tab @change="showTree(false)">目录</v-tab>
+      <v-tab @change="showTree(false)">大纲</v-tab>
     </v-tabs>
     <v-divider></v-divider>
     <!--  树状结构-->

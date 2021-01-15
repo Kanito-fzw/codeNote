@@ -5,7 +5,7 @@
     </el-breadcrumb>
 
     <div id="vditor"></div>
-    <button @click="save_markdownFile">saveMd</button>
+    <button @click="update_markdownFile">saveMd</button>
     <button @click="load_markdownFile">loadMd</button>
   </div>
 </template>
@@ -25,28 +25,27 @@ export default {
       titleHtml: '',//大纲
       contentEditor: "",//vditor插件
       breadcrumb: [],//面包屑
-      savePath: '',//保存路径
-      testMd: '',
       lastId: ''
     }
   },
   // 监听,当路由发生变化的时候执行
   watch: {
     $route(to) {
-      this.timeSetter()
+      this.createOutLine()
       if (to.params.id) {
-
         this.$nextTick(() => {
           //路由id改变时保存文件
           let flag = false
+          if (this.lastId===''){
+            this.lastId = to.params.id
+          }
           if (to.params.id !== this.lastId) {
-            this.save_markdownFile()
+            this.update_markdownFile()
             this.lastId = to.params.id
             flag = true
           }
           //获取文件路径
           this.breadcrumb = window.localStorage.getItem('breadLabel').split(">")
-          this.savePath = window.localStorage.getItem('breadLabel').replace(/>/g, '/')
           //路由id改变且获取到新路径后,读取文件
           if (flag) {
             this.load_markdownFile()
@@ -54,6 +53,9 @@ export default {
         })
       }
     },
+
+  },
+  created() {
 
   },
   mounted() {
@@ -71,7 +73,6 @@ export default {
         }
       },
       toolbar: [
-        "emoji",
         "headings",
         "bold",
         "italic",
@@ -107,63 +108,41 @@ export default {
       cache: {
         enable: false
       },
-      // after: () => {
-      //   this.contentEditor.setValue("hello,Vditor+Vue!\n" +
-      //       "\n" +
-      //       "# 标题1\n" +
-      //       "\n" +
-      //       "## 副标题\n" +
-      //       "\n" +
-      //       "### 子标题a\n" +
-      //       "\n" +
-      //       "### 子标题b\n" +
-      //       "\n" +
-      //       "\n" +
-      //       "# 标题2\n" +
-      //       "\n" +
-      //       "# 标题3\n" + this.$route.params.id)
-      // }
+      after:() =>{//编辑器渲染完成后填充内容
+        this.initPage()
+      },
+      input:()=> {//编辑内容后实时保存并生成大纲
+        this.update_markdownFile()
+        this.createOutLine()
+      }
     })
-    //注册到全局
-    window.vditor = this.contentEditor
-    this.timeSetter()
-    this.initPage()
+    this.createOutLine()
+
+
     //窗口自适应
     window.onresize = function () {
       document.getElementById('vditor').style.height = document.body.clientHeight - 147 + 'px'
     }
   },
   beforeDestroy() {
-    this.save_markdownFile()
+    this.update_markdownFile()
   },
   methods: {
     //初始化
     initPage() {
-      this.lastId = this.$route.params.id
-      this.breadcrumb = window.localStorage.getItem('breadLabel').split(">")
-      this.savePath = window.localStorage.getItem('breadLabel').replace(/>/g, '/')
-      //路由id改变且获取到新路径后,读取文件
-      this.load_markdownFile()
+        this.lastId = this.$route.params.id
+        this.breadcrumb = window.localStorage.getItem('breadLabel').split(">")
+        //路由id改变且获取到新路径后,读取文件
+        this.load_markdownFile()
     },
-    stopTrigger() {
-      if (window.timeTrigger) {
-        clearInterval(window.timeTrigger)
-        window.timeTrigger = null
-      }
-    },
-    timeSetter() {
-      this.$nextTick(() => {
-        if (window.timeTrigger) {
-          clearInterval(window.timeTrigger)
-          window.timeTrigger = null
-        }
-        window.timeTrigger = setInterval(() => {
+    //创建大纲
+    createOutLine() {
+      setTimeout(() => {
           if (this.titleHtml !== $(".vditor-outline__content").html()) {
             this.titleHtml = $(".vditor-outline__content").html()
             this.$store.commit('setOutline', this.sendTitles())
           }
-        }, 1000)
-      })
+      },500)
     },
     sendTitles() {
       let data = [];
@@ -199,21 +178,13 @@ export default {
       })
       return data
     },
-    create_markdownIndex() {
-      ipcRenderer.on("create-markdownIndex-reply", function (event, arg) {
-      });
-      ipcRenderer.send("create-markdownIndex-message", index.replace(/>/g, '/'));
-    },
-    save_markdownFile() {
-      ipcRenderer.on("save-markdownFile-reply", function (event, arg) {
-      });
-      ipcRenderer.send("save-markdownFile-message", this.savePath + '.md', this.contentEditor.getValue());
+    update_markdownFile() {
+      this.$db.putContent(this.lastId,this.contentEditor.getValue())
     },
     load_markdownFile() {
-      ipcRenderer.on("load-markdownFile-reply", (event, arg) => {
-        this.contentEditor.setValue(arg)
-      });
-      ipcRenderer.send("load-markdownFile-message", this.savePath + '.md');
+      this.$db.getContent(this.$route.params.id,result=>{
+        this.contentEditor.setValue(result)
+      })
     }
   }
 }

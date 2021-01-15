@@ -5,9 +5,6 @@ import {createProtocol} from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, {VUEJS_DEVTOOLS} from 'electron-devtools-installer'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
-import fs from 'fs-extra'
-import path from 'path'
-
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
@@ -87,68 +84,6 @@ if (isDevelopment) {
 
 //创建markdown目录
 ipcMain.on('create-markdownIndex-message', function (event, mdPath) {
-    // 这里是传给渲染进程的数据
-    fs.mkdir(path.join(__dirname, mdPath), {recursive:true},(err) => {
-        if (err) {
-            event.sender.send('create-markdownIndex-reply', '创建目录失败' + dir);
-        } else {
-            event.sender.send('create-markdownIndex-reply', '创建目录成功' + dir);
-        }
-    })
-});
-//保存markdown文件
-ipcMain.on('save-markdownFile-message', function (event, mdPath,content) {
-    // 这里是传给渲染进程的数据
-    fs.writeFile(path.join(__dirname,mdPath), content,'utf8', (err, data) => {
-        if (err) {
-            event.sender.send('save-markdownFile-reply', '创建markdown文件失败');
-        } else {
-            event.sender.send('save-markdownFile-reply', '创建markdown文件成功');
-        }
-    })
-});
-//读取markdown文件
-ipcMain.on('load-markdownFile-message', function (event, mdPath) {
-    // 这里是传给渲染进程的数据
-    fs.readFile(path.join(__dirname, mdPath), 'utf8', (err, data) => {
-        if (err) {
-            event.sender.send('load-markdownFile-reply', '读取失败' );
-        } else {
-            event.sender.send('load-markdownFile-reply', data);
-        }
-    })
-});
-//重命名markdown文件和目录
-ipcMain.on('rename -markdownFile-message', function (event, mdPath) {
-    // 这里是传给渲染进程的数据
-    fs.readFile(path.join(__dirname, mdPath), 'utf8', (err, data) => {
-        if (err) {
-            event.sender.send('rename -markdownFile-reply', '读取失败' );
-        } else {
-            event.sender.send('rename -markdownFile-reply', '成功');
-        }
-    })
-});
-//删除markdown文件
-ipcMain.on('delete -markdownFile-message', function (event, mdPath) {
-    // 这里是传给渲染进程的数据
-    fs.readFile(path.join(__dirname, mdPath), 'utf8', (err, data) => {
-        if (err) {
-            event.sender.send('delete -markdownFile-reply', '读取失败');
-        } else {
-            event.sender.send('delete -markdownFile-reply', '成功');
-        }
-    })
+    event.sender.send('create-markdownIndex-reply', '创建目录成功' + dir);
 });
 
-//删除markdown目录
-ipcMain.on('delete -markdownIndex-message', function (event, mdPath) {
-    // 这里是传给渲染进程的数据
-    fs.readFile(path.join(__dirname, mdPath), 'utf8', (err, data) => {
-        if (err) {
-            event.sender.send('delete -markdownIndex-reply', '失败');
-        } else {
-            event.sender.send('delete -markdownIndex-reply', '成功');
-        }
-    })
-});

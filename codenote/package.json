@@ -17,6 +17,8 @@
     "core-js": "^3.6.5",
     "element-ui": "^2.4.5",
     "jquery": "^3.5.1",
+    "lodash-id": "^0.14.0",
+    "lowdb": "^1.0.0",
     "vditor": "^3.7.5",
     "view-design": "^4.0.0",
     "vue": "^2.6.11",

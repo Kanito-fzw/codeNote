@@ -50,7 +50,7 @@
 
 <script>
 let id = window.localStorage.getItem('startId') || 1000;
-import bus from '@/assets/js/bus';
+import bus from '@/utils/js/bus';
 import {component as VueContextMenu} from '@xunlei/vue-context-menu'
 
 export default {
@@ -305,6 +305,7 @@ export default {
         }).then(({value}) => {
           const newChild = {id: id++, label: value, icon: 'mdi-file-document-outline'};
           data.children.push(newChild);
+          this.create_markdownFile(newChild.id)
           this.saveLocalStorage()
           //增加tabs
           bus.$emit('add', newChild.label, newChild.id)
@@ -337,6 +338,7 @@ export default {
       }).then(({value}) => {
         const newChild = {id: id++, label: value, icon: 'mdi-file-document-outline'};
         this.treeTitles.push(newChild);
+        this.create_markdownFile(newChild.id)
         this.saveLocalStorage()
         //增加tabs
         bus.$emit('add', newChild.label, newChild.id)
@@ -356,6 +358,7 @@ export default {
       const children = parent.data.children || parent.data;
       const index = children.findIndex(d => d.id === data.id);
       children.splice(index, 1);
+      this.delete_markdownFile(data)
       bus.$emit('delete', data.id)
       this.closeTabs(data)
 
@@ -379,6 +382,21 @@ export default {
       <el-button size="mini" type="text" on-click={() => this.remove(node, data)}>Delete</el-button>
       </span>
       </span>);
+    },
+
+    create_markdownFile(id) {
+      this.$db.postContent(id.toString(),'')
+    },
+    delete_markdownFile(data){
+      if (data.icon){
+        console.log(data.id.toString())
+        this.$db.deleteContent(data.id.toString())
+      }
+      if (data.children && data.children.length && data.children.length > 0) {
+        for (let i = 0; i < data.children.length; i++) {
+          this.closeTabs(data.children[i])
+        }
+      }
     }
   }
 };

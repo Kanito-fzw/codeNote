@@ -14,7 +14,7 @@
   </el-col>
 </template>
 <script>
-import bus from '@/assets/js/bus';
+import bus from '@/utils/js/bus';
 
 export default {
   data() {
@@ -28,10 +28,6 @@ export default {
   watch: {
     tabsItem(val) {
       if (val.length === 0) {
-        if (window.timeTrigger) {
-          clearInterval(window.timeTrigger)
-          window.timeTrigger = null
-        }
         this.tabsShowFlag = false
         this.$router.push({
           path: '/About'
