@@ -35,16 +35,18 @@
       </div>
 
     </el-tree>
-    <div
+    <el-dropdown-menu
+        slot="dropdown"
         id="right-menu"
         class="right-menu"
         :style="style"
-        v-show="contextMenuVisible">
-      <a href="javascript:;" @click="newFolder" v-show="newFolderShow">创建文件夹</a>
-      <a href="javascript:;" @click="newFile" v-show="newFileShow">创建文件</a>
-      <a href="javascript:;" @click="reNameFile" v-show="deleteFileShow">重命名</a>
-      <a href="javascript:;" @click="deleteFile" v-show="deleteFileShow">删除</a>
-    </div>
+        v-show="contextMenuVisible"
+    >
+      <el-dropdown-item @click.native="newFolder" v-show="newFolderShow" >创建文件夹</el-dropdown-item>
+      <el-dropdown-item @click.native="newFile" v-show="newFileShow" >创建文件</el-dropdown-item>
+      <el-dropdown-item @click.native="reNameFile" v-show="deleteFileShow" >重命名</el-dropdown-item>
+      <el-dropdown-item @click.native="deleteFile" v-show="deleteFileShow">删除</el-dropdown-item>
+    </el-dropdown-menu>
   </div>
 </template>
 
@@ -139,7 +141,8 @@ export default {
       this.style = {
         left: this.x + 'px',
         top: this.y + 'px',
-        display: this.contextMenuVisible ? 'block' : 'none'
+        display: this.contextMenuVisible ? 'block' : 'none',
+        padding: '0'
       }
       this.contextMenuVisible = true
     },
@@ -389,7 +392,6 @@ export default {
     },
     delete_markdownFile(data){
       if (data.icon){
-        console.log(data.id.toString())
         this.$db.deleteContent(data.id.toString())
       }
       if (data.children && data.children.length && data.children.length > 0) {
@@ -403,52 +405,10 @@ export default {
 </script>
 
 <style>
-a {
-  color: #333;
-}
-
-.right-menu {
-  position: fixed;
-  background: #fff;
-  border: solid 1px rgba(0, 0, 0, .2);
-  border-radius: 3px;
-  z-index: 999;
-}
-
-.right-menu a {
-  width: 75px;
-  height: 28px;
-  line-height: 28px;
-  text-align: center;
-  display: block;
-  color: #1a1a1a;
-}
-
-.right-menu a:hover {
-  background: #eee;
-  color: #fff;
-}
-
 html,
 body {
   height: 100%;
 }
 
-.right-menu {
-  border: 1px solid #eee;
-  box-shadow: 0 0.5em 1em 0 rgba(0, 0, 0, .1);
-  border-radius: 1px;
-}
 
-a {
-  text-decoration: none;
-}
-
-.right-menu a {
-  padding: 2px;
-}
-
-.right-menu a:hover {
-  background: darkgrey;
-}
 </style>

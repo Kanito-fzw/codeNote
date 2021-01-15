@@ -1,6 +1,6 @@
 <template>
   <div className="order">
-    <el-breadcrumb style="height: 28px;font-size: 16px;margin-top: 10px;margin-left: 10px;display: inline">
+    <el-breadcrumb style="height: 28px;font-size: 16px;padding-top: 6px">
       <el-breadcrumb-item v-for="item in breadcrumb">{{ item }}</el-breadcrumb-item>
     </el-breadcrumb>
 

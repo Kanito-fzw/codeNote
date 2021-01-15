@@ -68,8 +68,8 @@ class DB {
                     data.push(cursor.value)
                 }
             } else {
+                //遍历结束
                 successFunc(data)
-                // console.log('没有更多数据了！');
             }
         }
     }

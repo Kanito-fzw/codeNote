@@ -9,7 +9,7 @@
     </v-navigation-drawer>
 
     <!--    标签栏-->
-    <v-app-bar app style="background: white" min-width="300" height="26">
+    <v-app-bar app style="background: white" min-width="300" height="34">
       <Tabs></Tabs>
     </v-app-bar>
 

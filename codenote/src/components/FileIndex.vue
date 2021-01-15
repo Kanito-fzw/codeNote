@@ -32,7 +32,6 @@ export default {
   },
   watch:{
     listenshowpage1:function(newVal, oldVal){
-      console.log(newVal)
       this.data=newVal
     }
   },

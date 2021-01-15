@@ -1,17 +1,25 @@
 <template>
   <el-col :span="24" v-show="tabsShowFlag">
-    <el-tabs v-model="activeTab" ref="tabs" type="card" closable :stretch="true" @tab-remove="removeTab"
+    <el-tabs v-model="activeTab"
+             ref="tabs"
+             type="card"
+             closable
+             tab-position="top"
+             @tab-remove="removeTab"
              @tab-click="tabClick">
       <el-tab-pane
+          style="height: 30px"
           v-for="(item, index) in tabsItem"
           :key="item.id"
           :label="item.title"
           :name="item.name"
-      >
+          >
       </el-tab-pane>
     </el-tabs>
 
   </el-col>
+
+
 </template>
 <script>
 import bus from '@/utils/js/bus';
@@ -118,3 +126,19 @@ export default {
   }
 }
 </script>
+<style>
+.el-tabs{
+  height: 34px!important;
+  margin-top: -1px;
+  border: 0;
+
+}
+.el-tabs__item{
+  height: 34px!important;
+  padding: 0 20px!important;
+  line-height: 34px!important;
+}
+.el-icon-close{
+  display:inline!important
+}
+</style>
