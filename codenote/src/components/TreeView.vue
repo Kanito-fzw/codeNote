@@ -1,5 +1,6 @@
 <template>
   <div class="block" style="height:80%; overflow: auto;" ref="block" @contextmenu="rightClick">
+    <button @click="testButton">button</button>
     <el-tree
         id="tree"
         :data="treeTitles"
@@ -36,14 +37,14 @@
 
     </el-tree>
     <div class="el-dropdown-menu"
-        slot="dropdown"
-        id="right-menu"
-        :style="style"
-        v-show="contextMenuVisible"
+         slot="dropdown"
+         id="right-menu"
+         :style="style"
+         v-show="contextMenuVisible"
     >
-      <el-dropdown-item @click.native="newFolder" v-show="newFolderShow" >创建文件夹</el-dropdown-item>
-      <el-dropdown-item @click.native="newFile" v-show="newFileShow" >创建文件</el-dropdown-item>
-      <el-dropdown-item @click.native="reNameFile" v-show="deleteFileShow" >重命名</el-dropdown-item>
+      <el-dropdown-item @click.native="newFolder" v-show="newFolderShow">创建文件夹</el-dropdown-item>
+      <el-dropdown-item @click.native="newFile" v-show="newFileShow">创建文件</el-dropdown-item>
+      <el-dropdown-item @click.native="reNameFile" v-show="deleteFileShow">重命名</el-dropdown-item>
       <el-dropdown-item @click.native="deleteFile" v-show="deleteFileShow">删除</el-dropdown-item>
     </div>
     <br>
@@ -54,18 +55,16 @@
 </template>
 
 <script>
+const ipcRenderer = window.require('electron').ipcRenderer
+const {dialog} = window.require('electron')
 let id = window.localStorage.getItem('startId') || 1000;
 import bus from '@/utils/js/bus';
-import {component as VueContextMenu} from '@xunlei/vue-context-menu'
 
 export default {
-  components: {
-    'context-menu': VueContextMenu
-  },
   data() {
     return {
-      breadList:[],     //面包屑数组
-      breadLabel:'',     //面包屑路径
+      breadList: [],     //面包屑数组
+      breadLabel: '',     //面包屑路径
       treeClickCount: 0,
       treeTitles: [], //tree数据
       contextMenuVisible: false,//显示右键
@@ -91,6 +90,7 @@ export default {
     }
   },
   mounted() {
+
     bus.$on('focus', (id) => {
       this.focusNode(id)
     })
@@ -100,6 +100,20 @@ export default {
         this.treeTitles = item
       }
     }
+    ipcRenderer.on('import-markdown-message', (event, filePath, fileContent) => {
+      let fileName = filePath.substr(filePath.lastIndexOf('\\') + 1)
+      this.importFile(fileName.substr(0, fileName.length - 3), fileContent)
+    });
+    ipcRenderer.on("output-markdown-reply",  (event, arg)=> {
+      this.$message({
+        type: "success",
+        message:"导出"+arg+"个文件成功",
+        duration:2000
+      })
+    });
+    ipcRenderer.on("export-markdown",  (event, arg)=> {
+      this.output_markdownFile()
+    });
   },
   updated() {
     this.saveLocalStorage()
@@ -170,7 +184,7 @@ export default {
       }
       this.contextMenuVisible = false
     },
-    reNameFile(){
+    reNameFile() {
       if (this.deleteFileShow) {
         this.handleEdit(this.currentNode, this.currentData)
       }
@@ -206,11 +220,11 @@ export default {
         this.$set(_node, 'isEdit', false)
       }
       //如果是当前选中节点还要修改面包屑和tab
-      if (_data.icon){
-        if (_data.id===this.$refs.tree.getCurrentNode().id){
+      if (_data.icon) {
+        if (_data.id === this.$refs.tree.getCurrentNode().id) {
           this.changeDept(_data)
           this.$router.push({
-            path: '/Markdown/' + _data.id+'?a='+ _data.label
+            path: '/Markdown/' + _data.id + '?a=' + _data.label
           })
         }
         bus.$emit('reName', _data.id, _data.label)
@@ -218,20 +232,20 @@ export default {
       this.saveLocalStorage()
     },
     //更新面包屑路径
-    changeDept(data){
+    changeDept(data) {
       let tree = this.$refs.tree;
       this.breadList = []; //初始化
       this.getTreeNode(tree.getNode(data));
-      this.breadLabel='home>'+this.breadLabel
+      this.breadLabel = 'home>' + this.breadLabel
       window.localStorage.setItem('breadLabel', this.breadLabel)
     },
     //获取当前树节点和其父级节点
-    getTreeNode(node){
+    getTreeNode(node) {
       if (node) {
         if (node.label !== undefined) {
           this.breadList.unshift(node.label); //在数组头部添加元素
           this.getTreeNode(node.parent); //递归
-          this.breadLabel=this.breadList.join('>');
+          this.breadLabel = this.breadList.join('>');
         }
       }
     },
@@ -261,7 +275,7 @@ export default {
             }
             bus.$emit('add', data.label, data.id)
             this.$router.push({
-              path: '/Markdown/' + data.id+'?a='+data.label
+              path: '/Markdown/' + data.id + '?a=' + data.label
             })
           }
 
@@ -349,13 +363,33 @@ export default {
         //增加tabs
         bus.$emit('add', newChild.label, newChild.id)
         this.focusNode(newChild.id.toString())
-            this.$nextTick(() => {
-              this.$router.push({
-                path: '/Markdown/' + newChild.id
-              })
-            })
+        this.$nextTick(() => {
+          this.$router.push({
+            path: '/Markdown/' + newChild.id
+          })
+        })
 
       })
+    },
+
+    //导入文件
+    importFile(label, content) {
+      const data = this.$refs.tree.getCurrentNode()
+      const newChild = {id: id++, label: label, icon: 'mdi-file-document-outline'};
+      //为选中节点
+      if (!data) {
+        this.treeTitles.push(newChild);
+        this.saveLocalStorage()
+      } else if (!data.children && !data.icon) {
+        this.$set(data, 'children', []);
+      } else if (data.icon) {
+        this.$refs.tree.insertAfter(newChild, data.id)
+        this.saveLocalStorage()
+      } else {
+        data.children.push(newChild);
+        this.saveLocalStorage()
+      }
+      this.create_markdownFile(newChild.id, content)
     },
 
     //删除节点并关闭tab
@@ -379,11 +413,11 @@ export default {
       }
     },
 
-    create_markdownFile(id,content) {
-      this.$db.postContent(id.toString(),content||'')
+    create_markdownFile(id, content) {
+      this.$db.postContent(id.toString(), content || '')
     },
-    delete_markdownFile(data){
-      if (data.icon){
+    delete_markdownFile(data) {
+      if (data.icon) {
         this.$db.deleteContent(data.id.toString())
       }
       if (data.children && data.children.length && data.children.length > 0) {
@@ -391,7 +425,31 @@ export default {
           this.closeTabs(data.children[i])
         }
       }
+    },
+    output_markdownFile() {
+      const data = this.$refs.tree.getCurrentNode()
+      if (!data) {
+        this.$message.error('请选择文件或文件夹')
+        return false
+      }
+      this.queryMarkdown(data)
+      ipcRenderer.send("output-markdown-message", data);
+    },
+    queryMarkdown(data) {
+      if (data.children) {
+        for (let i = 0; i < data.children.length; i++) {
+          this.queryMarkdown(data.children[i])
+        }
+      } else if (data.icon) {
+        this.$db.getContent(data.id.toString(), result => {
+        data.content=result
+        })
+      }
+    },
+    testButton() {
+      this.output_markdownFile()
     }
+
   }
 };
 </script>

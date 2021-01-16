@@ -7,6 +7,7 @@ import vuetify from './plugins/vuetify';
 import './plugins/iview.js'
 import './plugins/element.js'
 import db from './utils/js/db'
+
 Vue.prototype.$db=db
 
 
