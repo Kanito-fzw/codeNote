@@ -127,7 +127,7 @@ const template = [
             {
                 label: '全部导出',
                 click: () => {
-                    console.log('替换');
+                    win.webContents.send('export-allFile');
                 }
             },
 
@@ -247,7 +247,7 @@ function outPutMarkDown(data, rootPath) {
     }
 }
 
-//创建markdown目录
+//导出选中的文件或文件夹
 ipcMain.on('output-markdown-message', function (event, arg) {
     exportCount = 0
     dialog.showOpenDialog({
@@ -258,6 +258,23 @@ ipcMain.on('output-markdown-message', function (event, arg) {
         outPutMarkDown(arg, result.filePaths[0])
     }).finally(() => {
         event.sender.send('output-markdown-reply',exportCount);
+    })
+
+});
+
+//导出全部
+ipcMain.on('output-allFile-message', function (event, arg) {
+    exportCount = 0
+    dialog.showOpenDialog({
+        properties: ['openDirectory'],
+        message: '选择导出目录',
+        buttonLabel: '导出'
+    }).then((result) => {
+        arg.forEach((item)=>{
+            outPutMarkDown(item, result.filePaths[0])
+        })
+    }).finally(() => {
+        event.sender.send('output-allFile-reply',exportCount);
     })
 
 });

@@ -111,8 +111,18 @@ export default {
         duration:2000
       })
     });
+    ipcRenderer.on("output-allFile-reply",  (event, arg)=> {
+      this.$message({
+        type: "success",
+        message:"导出"+arg+"个文件成功",
+        duration:2000
+      })
+    });
     ipcRenderer.on("export-markdown",  (event, arg)=> {
       this.output_markdownFile()
+    });
+    ipcRenderer.on("export-allFile",  (event, arg)=> {
+      this.output_allFile()
     });
   },
   updated() {
@@ -426,6 +436,7 @@ export default {
         }
       }
     },
+    //导出选中的文件或文件夹
     output_markdownFile() {
       const data = this.$refs.tree.getCurrentNode()
       if (!data) {
@@ -434,6 +445,12 @@ export default {
       }
       this.queryMarkdown(data)
       ipcRenderer.send("output-markdown-message", data);
+    },
+    //导出全部
+    output_allFile() {
+      const data = this.treeTitles
+      this.queryMarkdown(data)
+      ipcRenderer.send("output-allFile-message", data);
     },
     queryMarkdown(data) {
       if (data.children) {
