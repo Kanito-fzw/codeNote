@@ -1,32 +1,93 @@
 <template>
-  <el-col :span="24" v-show="tabsShowFlag">
-    <el-tabs v-model="activeTab"
-             ref="tabs"
-             type="card"
-             closable
-             tab-position="top"
-             @tab-remove="removeTab"
-             @tab-click="tabClick">
-      <el-tab-pane
-          style="height: 30px"
-          v-for="(item, index) in tabsItem"
-          :key="item.id"
-          :label="item.title"
-          :name="item.name"
+  <div>
+
+    <el-col :span="24" v-show="tabsShowFlag">
+      <el-tabs v-model="activeTab"
+               ref="tabs"
+               type="card"
+               closable
+               tab-position="top"
+               @tab-remove="removeTab"
+               @tab-click="tabClick">
+        <el-tab-pane
+            style="height: 30px"
+            v-for="(item, index) in tabsItem"
+            :key="item.id"
+            :label="item.title"
+            :name="item.name"
+        >
+        </el-tab-pane>
+      </el-tabs>
+
+    </el-col>
+    <v-card
+        v-show="showSearchBar"
+        class="mx-auto"
+        max-width="300"
+        tile
+    >
+      <v-list dense
+              style="position: fixed; top: 60px; z-index: 3001; right: 152px; width: 170px  ">
+        <v-list-item-group
+            color="primary"
+        >
+          <v-list-item
+              v-for="(item, i) in items"
+              @click.prevent="searchClick(item)"
           >
-      </el-tab-pane>
-    </el-tabs>
-
-  </el-col>
-
+            <v-list-item-content >
+              <v-list-item-title v-text="item.name" ></v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list-item-group>
+      </v-list>
+    </v-card>
+  </div>
 
 </template>
 <script>
 import bus from '@/utils/js/bus';
 
+const {remote, ipcRenderer} = window.require('electron')
+import {FindInPage} from 'electron-find'
+export function fireKeyEvent(el, evtType, keyCode) {
+  var evtObj;
+  if (document.createEvent) {
+    if (window.KeyEvent) {//firefox 浏览器下模拟事件
+      evtObj = document.createEvent('KeyEvents');
+      evtObj.initKeyEvent(evtType, true, true, window, true, false, false, false, keyCode, 0);
+    } else {//chrome 浏览器下模拟事件
+      evtObj = document.createEvent('UIEvents');
+      evtObj.initUIEvent(evtType, true, true, window, 1);
+
+      delete evtObj.keyCode;
+      if (typeof evtObj.keyCode === "undefined") {//为了模拟keycode
+        Object.defineProperty(evtObj, "keyCode", { value: keyCode });
+      } else {
+        evtObj.key = String.fromCharCode(keyCode);
+      }
+
+      if (typeof evtObj.ctrlKey === 'undefined') {//为了模拟ctrl键
+        Object.defineProperty(evtObj, "ctrlKey", { value: true });
+      } else {
+        evtObj.ctrlKey = true;
+      }
+    }
+    el.dispatchEvent(evtObj);
+
+  } else if (document.createEventObject) {//IE 浏览器下模拟事件
+    evtObj = document.createEventObject();
+    evtObj.keyCode = keyCode
+    el.fireEvent('on' + evtType, evtObj);
+  }
+}
+
 export default {
   data() {
     return {
+      items: [],
+      idCollection:[],
+      showSearchBar:false,
       activeTab: '', //默认显示的tab
       tabsItem: [],
       tabIndex: 1,
@@ -34,6 +95,15 @@ export default {
     }
   },
   watch: {
+    $route(to) {
+      if (to.params.id) {
+        if (this.showSearchBar&&document.getElementsByClassName('find-input')[0].value){
+          console.log('change')
+          fireKeyEvent(document.getElementById('find-input'),'keydown',13);
+          console.log('ed')
+        }
+      }
+    },
     tabsItem(val) {
       if (val.length === 0) {
         this.tabsShowFlag = false
@@ -55,8 +125,80 @@ export default {
     bus.$on('reName', (id, newName) => {
       this.reNameTab(id, newName)
     })
+    window.findInPage = new FindInPage(remote.getCurrentWebContents(), {
+      preload: true,
+      parentElement: document.getElementById('markDownWrapper'),
+      offsetTop: 30,
+      duration: 200,
+    })
+
+    ipcRenderer.on("open-find", (event, arg) => {
+      this.open_findForm()
+    });
+
+    //全文检索按键监听
+    let findInput = document.getElementsByClassName('find-input')[0]
+    let findClose = document.getElementsByClassName('find-close')[0]
+    findInput.addEventListener('input', this.inputEvent)
+    findClose.addEventListener('click', ()=>{
+      this.showSearchBar=false
+      this.items=[]
+    })
+    document.addEventListener('keydown',(e)=>{
+      if(e.keyCode===27){
+        this.showSearchBar=false
+        this.items=[]
+      }
+    })
   },
   methods: {
+    searchClick(item){
+      // console.log()
+      this.addTab(item.name,item.id)
+      this.tabClick({name:item.id.toString()})
+    },
+    //当前页面查询高亮
+    open_findForm() {
+      window.findInPage.openFindWindow()
+      this.showSearchBar=true
+    },
+    //全文检索
+    inputEvent(){
+      this.items=[]
+      if (document.getElementsByClassName('find-input')[0].value) {
+        this.$db.getAllContent(document.getElementsByClassName('find-input')[0].value, result => {
+          this.idCollection=result
+          this.getTreeList()
+        })
+      }
+    },
+    getTreeList(){
+      let treeList = JSON.parse(window.localStorage.getItem('titleTree'));
+      if (treeList.length>0){
+        for (let i = 0; i < treeList.length; i++) {
+          this.mapTitleTree(treeList[i])
+        }
+      }
+
+    },
+    mapTitleTree(data){
+      if (data.children){
+        if (data.children.length>0){
+          for (let i = 0; i < data.children.length; i++) {
+            this.mapTitleTree(data.children[i])
+          }
+        }
+      }else if(data.icon){
+        for (let i = 0; i < this.idCollection.length; i++) {
+          if (data.id.toString()===this.idCollection[i]){
+              this.items.push({name:data.label,id:data.id})
+          }
+        }
+      }
+    },
+    close_findForm() {
+      window.findInPage.closeFindWindow()
+    },
     addTab(name, val) {//增加tab
       let flag = true
       this.tabsItem.forEach((item) => {
@@ -102,6 +244,7 @@ export default {
       })
     },
     tabClick(thisTab) {
+      console.log(thisTab)
       /*
       * thisTab:当前选中的tabs的实例
       * 通过当前选中tabs的实例获得当前实例的path 重新定位路由
@@ -112,7 +255,7 @@ export default {
             if (item.id != this.$route.path.substr(10)) {
               bus.$emit('focus', item.id)
               this.$router.push({
-                path: '/Markdown/' + item.id+'?a='+item.title
+                path: '/Markdown/' + item.id + '?a=' + item.title
               })
             }
             throw new Error("breakForEach");
@@ -127,18 +270,20 @@ export default {
 }
 </script>
 <style>
-.el-tabs{
-  height: 34px!important;
+.el-tabs {
+  height: 34px !important;
   margin-top: -1px;
   border: 0;
 
 }
-.el-tabs__item{
-  height: 34px!important;
-  padding: 0 20px!important;
-  line-height: 34px!important;
+
+.el-tabs__item {
+  height: 34px !important;
+  padding: 0 20px !important;
+  line-height: 34px !important;
 }
-.el-icon-close{
-  display:inline!important
+
+.el-icon-close {
+  display: inline !important
 }
 </style>

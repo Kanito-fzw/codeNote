@@ -170,16 +170,9 @@ const template = [
             },
             {
                 label: '查找',
-                accelerator: 'Command+F',
+                accelerator: 'ctrl+F',
                 click: () => {
-                    console.log('查找');
-                }
-            },
-            {
-                label: '替换',
-                accelerator: 'Command+R',
-                click: () => {
-                    console.log('替换');
+                    win.webContents.send('open-find');
                 }
             }
 

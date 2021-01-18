@@ -3,14 +3,14 @@
     <el-breadcrumb>
       <el-breadcrumb-item v-for="item in breadcrumb">{{ item }}</el-breadcrumb-item>
     </el-breadcrumb>
-
-    <div id="vditor" @contextmenu="rightClick"></div>
-    <button @click="update_markdownFile">saveMd</button>
-    <button @click="load_markdownFile">loadMd</button>
+    <div id="markDownWrapper">
+      <div id="vditor" @contextmenu="rightClick"></div>
+    </div>
+    <button @click="testMd">testMd</button>
     <div class="el-dropdown-menu"
-        slot="dropdown"
-        :style="style"
-        v-show="contextMenuVisible"
+         slot="dropdown"
+         :style="style"
+         v-show="contextMenuVisible"
     >
       <el-dropdown-item id="rightCilck_copy">复制</el-dropdown-item>
       <el-dropdown-item id="rightCilck_paste">粘贴</el-dropdown-item>
@@ -25,14 +25,17 @@
 import Vditor from "vditor"
 import "vditor/dist/index.css"
 import VditorPreview from 'vditor/dist/method.min'
-const clipboard  = window.require('electron').clipboard
+
+const clipboard = window.require('electron').clipboard
+const {remote, ipcRenderer} = window.require('electron')
 VditorPreview.mermaidRender(document)
 import $ from 'jquery'
+
 
 export default {
   data() {
     return {
-      showBoorFlag:true,//显示工具栏
+      showBoorFlag: true,//显示工具栏
       contextMenuVisible: false,//显示右键
       titleHtml: '',//大纲
       contentEditor: "",//vditor插件
@@ -91,8 +94,8 @@ export default {
       tab: '\t',
       mode: 'ir',
       preview: {
-        markdown:{
-          paragraphBeginningSpace:true
+        markdown: {
+          paragraphBeginningSpace: true
         },
         theme: {current: 'light'},
         hljs: {
@@ -153,23 +156,24 @@ export default {
       document.getElementById('vditor').style.height = document.body.clientHeight - 147 + 'px'
     }
 
+
   },
   beforeDestroy() {
     this.update_markdownFile()
   },
   methods: {
-    rightCilck_copy(event){
+    rightCilck_copy(event) {
       event.preventDefault();
       this.closRightMenu()
       clipboard.writeText(this.contentEditor.getSelection())
     },
-    rightCilck_paste(event){
+    rightCilck_paste(event) {
       event.preventDefault();
       this.closRightMenu()
       console.log(clipboard.readText())
-      this.contentEditor.insertValue(clipboard.readText(),true)
+      this.contentEditor.insertValue(clipboard.readText(), true)
     },
-    rightCilck_cut(event){
+    rightCilck_cut(event) {
       event.preventDefault();
       this.closRightMenu()
       console.log(clipboard.readText())
@@ -177,33 +181,32 @@ export default {
       this.contentEditor.deleteValue()
     },
     // 右键功能-插入代码库
-    rightCilck_codeBock(event){
+    rightCilck_codeBock(event) {
       event.preventDefault();
       this.closRightMenu()
-      this.contentEditor.insertValue('\n```',true)
+      this.contentEditor.insertValue('\n```', true)
     },
     // 右键功能-显示工具栏
-    rightCilck_showBoor(event){
+    rightCilck_showBoor(event) {
       event.preventDefault();
       this.closRightMenu()
-      document.getElementsByClassName('vditor-toolbar')[0].style.display='block'
-      this.showBoorFlag=true
+      document.getElementsByClassName('vditor-toolbar')[0].style.display = 'block'
+      this.showBoorFlag = true
     },
-    rightCilck_hiddenBoor(event){
+    rightCilck_hiddenBoor(event) {
       event.preventDefault();
       this.closRightMenu()
-      document.getElementsByClassName('vditor-toolbar')[0].style.display='none'
-      this.showBoorFlag=false
+      document.getElementsByClassName('vditor-toolbar')[0].style.display = 'none'
+      this.showBoorFlag = false
     },
     //右键事件
     rightClick(event) {
-      if ('translateX(0%)'==document.getElementById('leftWrapper').style.transform){
-        this.x = event.clientX-parseInt(document.getElementById('leftWrapper').style.width)
-      }
-      else {
+      if ('translateX(0%)' == document.getElementById('leftWrapper').style.transform) {
+        this.x = event.clientX - parseInt(document.getElementById('leftWrapper').style.width)
+      } else {
         this.x = event.clientX
       }
-      this.y = event.clientY-35
+      this.y = event.clientY - 35
       this.openRightMenu()
     },
     //显示右键
@@ -278,7 +281,11 @@ export default {
       this.$db.getContent(this.$route.params.id, result => {
         this.contentEditor.setValue(result)
       })
+    },
+    testMd(){
+
     }
+
   }
 }
 </script>

@@ -1,6 +1,5 @@
 <template>
   <div class="block" style="height:80%; overflow: auto;" ref="block" @contextmenu="rightClick">
-    <button @click="testButton">button</button>
     <el-tree
         id="tree"
         :data="treeTitles"
@@ -463,9 +462,6 @@ export default {
         })
       }
     },
-    testButton() {
-      this.output_markdownFile()
-    }
 
   }
 };
