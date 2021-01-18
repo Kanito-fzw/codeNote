@@ -67,7 +67,8 @@
                   <v-btn
                       @click="getCheckCode"
                       :disabled="sending"
-                  >{{ codeText }}</v-btn>
+                  >{{ codeText }}
+                  </v-btn>
                 </td>
               </tr>
               <tr>
@@ -97,7 +98,6 @@
             </table>
 
 
-
           </v-form>
         </v-card-text>
       </v-card>
@@ -108,14 +108,15 @@
 export default {
   data: () => ({
     valid: true,
-    codeText:'获取验证码',
+    codeText: '获取验证码',
     sending: false, // 是否发送验证码
     second: 60, // 倒计时间
-    user:{
+    user: {
       phone: '',
       password: '',
       checkCode: '',
     },
+    userData:{},
     phoneRules: [
       v => !!v || '请输入手机号',
       v => (v && v.length === 11) || '手机号错误',
@@ -143,17 +144,19 @@ export default {
       return true;
     },
     //获取验证码
-    getCheckCode(){
+    getCheckCode() {
       // this.sending原为false,
       // 点击后立即使 this.sending == true，防止有人多次点击
-      if (this.sending) { return }
+      if (this.sending) {
+        return
+      }
       this.sending = true
       // $ajax.post('',this.user.phone).then(response => {
-        this.timeDown()
-        this.$message({
-          type: 'success',
-          message: '短信发送成功'
-        })
+      this.timeDown()
+      this.$message({
+        type: 'success',
+        message: '短信发送成功'
+      })
       // })
     },
     // 倒计时
@@ -169,11 +172,16 @@ export default {
         }
       }, 1000)
     },
-    //提交
-    submit() {
-      this.$refs.form.validate()
-    },
     //登录
+    submit() {
+      //todo 提交ajax登录请求
+      this.hiddenDialog()
+
+    //todo 登录成功存储用户信息
+      this.$ls.setLocalStorage('userData',this.userData)
+      this.$store.commit('setUserName', 'jon')
+    },
+    //重置
     reset() {
       this.$refs.form.reset()
     },

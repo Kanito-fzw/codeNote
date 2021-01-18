@@ -62,8 +62,27 @@ export default {
       tabsShowFlag: false
     }
   },
+  computed:{
+
+  },
   watch: {
-    tabsItem(val) {
+    tabsItem(val, oldVal) {
+     let userName= this.$store.getters.userName
+      if (userName&&userName.length>5){
+        //val和oldVal的补集
+        this.$ls.getLocalStorage('userData')
+        var e = val.filter(function (v) {
+          return !(oldVal.indexOf(v) > -1)
+        }).concat(oldVal.filter(function (v) {
+          return !(val.indexOf(v) > -1)
+        }))
+        console.log(e)
+        if (e.length>0){
+          for (let i = 0; i < e.length; i++) {
+            //todo  发送ajax同步数据
+          }
+        }
+      }
       if (val.length === 0) {
         this.tabsShowFlag = false
         this.$router.push({
@@ -93,6 +112,10 @@ export default {
 
     ipcRenderer.on("open-find", (event, arg) => {
       this.open_findForm()
+    });
+    ipcRenderer.on("closeTabs-message", (event, arg) => {
+      this.tabsItem = []
+      event.sender.send("closeTabs-reply")
     });
 
     //全文检索按键监听
@@ -131,7 +154,7 @@ export default {
       }
     },
     getTreeList() {
-      let treeList = JSON.parse(window.localStorage.getItem('titleTree'));
+      let treeList = this.$ls.getLocalStorage('titleTree')
       if (treeList.length > 0) {
         for (let i = 0; i < treeList.length; i++) {
           this.mapTitleTree(treeList[i])

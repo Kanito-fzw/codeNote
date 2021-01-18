@@ -92,7 +92,7 @@ export default {
       height: document.body.clientHeight - 147,
       anchor: 1,
       tab: '\t',
-      mode: 'ir',
+      mode: this.$ls.getLocalStorage('configData').mode,
       preview: {
         markdown: {
           paragraphBeginningSpace: true
@@ -100,40 +100,10 @@ export default {
         theme: {current: 'light'},
         hljs: {
           enable: true,
-          style: 'vs'
+          style:this.$ls.getLocalStorage('configData').preview.hljs.style
         }
       },
-      toolbar: [
-        "headings",
-        "bold",
-        "italic",
-        "strike",
-        "link",
-        "upload",
-        "list",
-        "ordered-list",
-        "check",
-        "quote",
-        "line",
-        "table",
-        "code",
-        "inline-code",
-        "fullscreen",
-        "export",
-        {
-          name: "more",
-          toolbar: [
-
-            "edit-mode",
-            "both",
-            "code-theme",
-            "content-theme",
-            "preview",
-            "info",
-            "help",
-          ],
-        }
-      ],
+      toolbar: this.$ls.getLocalStorage('configData').toolbar,
       toolbarConfig: {
         pin: true
       },

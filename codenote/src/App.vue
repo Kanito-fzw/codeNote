@@ -10,6 +10,12 @@ export default {
   name: 'app',
   components: {
     Layout
+  },
+  mounted() {
+    const historyUserData=this.$ls.getLocalStorage('userData')
+    if (historyUserData&&historyUserData.userName){
+      this.$store.commit('setUserName',historyUserData.userName)
+    }
   }
 }
 </script>

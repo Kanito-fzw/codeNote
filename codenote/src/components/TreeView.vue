@@ -94,7 +94,7 @@ export default {
       this.focusNode(id)
     })
     if (this.treeTitles === null || this.treeTitles.length === 0) {
-      let item = JSON.parse(window.localStorage.getItem('titleTree'));
+      let item = this.$ls.getLocalStorage('titleTree')
       if (item.length !== 0) {
         this.treeTitles = item
       }
@@ -134,7 +134,7 @@ export default {
     //保存数据
     saveLocalStorage() {
       window.localStorage.setItem('startId', id)
-      window.localStorage.setItem('titleTree', JSON.stringify(this.treeTitles))
+      this.$ls.setLocalStorage('titleTree',this.treeTitles)
     },
     //tree右键事件
     treeRightClick(MouseEvent, object, Node, element) { // 鼠标右击触发事件
@@ -381,6 +381,7 @@ export default {
       })
     },
 
+    //todo 发送ajax新增
     //导入文件
     importFile(label, content) {
       const data = this.$refs.tree.getCurrentNode()
@@ -425,6 +426,7 @@ export default {
     create_markdownFile(id, content) {
       this.$db.postContent(id.toString(), content || '')
     },
+    //todo 发送ajax删除
     delete_markdownFile(data) {
       if (data.icon) {
         this.$db.deleteContent(data.id.toString())

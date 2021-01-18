@@ -185,7 +185,8 @@ export default {
     },
     //提交
     submit() {
-      this.$refs.form.validate()
+      //todo ajax提交注册请求
+      this.hiddenDialog()
     },
     //登录
     reset() {

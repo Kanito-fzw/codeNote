@@ -250,7 +250,7 @@ ipcMain.on('output-markdown-message', function (event, arg) {
     }).then((result) => {
         outPutMarkDown(arg, result.filePaths[0])
     }).finally(() => {
-        event.sender.send('output-markdown-reply',exportCount);
+        event.sender.send('output-markdown-reply', exportCount);
     })
 
 });
@@ -263,13 +263,21 @@ ipcMain.on('output-allFile-message', function (event, arg) {
         message: '选择导出目录',
         buttonLabel: '导出'
     }).then((result) => {
-        arg.forEach((item)=>{
+        arg.forEach((item) => {
             outPutMarkDown(item, result.filePaths[0])
         })
     }).finally(() => {
-        event.sender.send('output-allFile-reply',exportCount);
+        event.sender.send('output-allFile-reply', exportCount);
     })
 
+});
+//重启
+ipcMain.on('restart-message', function (event, arg) {
+    win.webContents.send('closeTabs-message');
+
+});
+ipcMain.on("closeTabs-reply",  (event, arg)=> {
+   app.relaunch()
 });
 
 

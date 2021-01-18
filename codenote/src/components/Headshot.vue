@@ -16,10 +16,18 @@
               x-large
               v-on="on"
           >
-            <v-avatar color="grey">
+
+            <v-avatar color="grey" v-if="!user.userName">
               <v-icon dark>
                 mdi-account-circle
               </v-icon>
+            </v-avatar>
+<!--         todo   已登录 未设置头像使用默认头像-->
+            <v-avatar  v-if="user.userName&&!user.avatar">
+              <img src="./1.jpg" alt="">
+            </v-avatar>
+            <v-avatar  v-if="user.userName&&user.avatar">
+              <img :src="user.avatar" alt="">
             </v-avatar>
           </v-btn>
         </template>
@@ -66,7 +74,7 @@
       </v-menu>
     </v-row>
     <v-row justify="center" style="margin-top: 20px">
-      未登录
+      {{user.userName||'未登录'}}
     </v-row>
   </v-container>
 </template>
@@ -76,10 +84,21 @@
 export default {
   data: () => ({
     user: {
-      userName: 'John Doe',
-      phone: 'john.doe@doe.com',
+      userName: '',
+      phone: 'phoneNo',
+      avatar:''
     },
   }),
+  computed: {
+    userName () {
+      return this.$store.getters.userName
+    }
+  },
+  watch:{
+    userName(){
+      this.user=this.$ls.getLocalStorage('userData')
+    }
+  },
   methods:{
     openLogin(){
       this.$store.commit('showOpenLogin',true)
