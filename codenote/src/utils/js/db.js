@@ -60,19 +60,15 @@ class DB {
     //模糊查询
     getAllContent(keyWord, successFunc) {
         const data = []
-        console.log('query')
         let allContent = this.db.transaction('markdown').objectStore('markdown')
         allContent.openCursor().onsuccess = (event) => {
             var cursor = event.target.result;
-
             if (cursor) {
                 if (cursor.value.content.indexOf(keyWord) >= 0) {
                     data.push(cursor.value.id)
-
                 }
                 cursor.continue();
             } else {
-
                 //遍历结束
                 successFunc(data)
             }
