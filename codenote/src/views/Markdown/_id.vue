@@ -93,6 +93,10 @@ export default {
       anchor: 1,
       tab: '\t',
       mode: this.$ls.getLocalStorage('configData').mode,
+      counter:{
+        enable:true,
+        max:65535
+      },
       preview: {
         markdown: {
           paragraphBeginningSpace: true
